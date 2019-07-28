@@ -165,10 +165,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Algorythms.h" />
     <ClInclude Include="Building.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Algorythms.cpp" />
     <ClCompile Include="Building.cpp" />
     <ClCompile Include="mayaPlugin.cpp" />
     <ClCompile Include="pch.cpp">
