@@ -68,18 +68,18 @@ void Building::setAsCuboid(int moveX, int moveZ)
 }
 
 void Building::move(double moveX, double moveY, double moveZ) {
-	for (MFloatPoint point : vert) {
-		point.x += moveX;
-		point.y += moveY;
-		point.z += moveZ;
+	for (int i = 0; i < vert.sizeIncrement(); ++i) {
+		vert[i].x += moveX;
+		vert[i].y += moveY;
+		vert[i].z += moveZ;
 	}
 }
 
 void Building::scale(double scaleX, double scaleY, double scaleZ) {
-	for (MFloatPoint point : vert) {
-		point.x *= scaleX;
-		point.y *= scaleY;
-		point.z *= scaleZ;
+	for (int i = 0; i < vert.sizeIncrement(); ++i) {
+		vert[i].x *= scaleX;
+		vert[i].y *= scaleY;
+		vert[i].z *= scaleZ;
 	}
 }
 
@@ -89,10 +89,10 @@ void Building::scale(double scale) {
 
 void Building::rotateY(double degrees) {
 	double degInRad = degrees * M_PI / 180;
-	for (MFloatPoint point : vert) {
-		auto oldX = point.x;
-		auto oldY = point.y;
-		point.x = cos(degInRad) * oldX - sin(degInRad) * oldY;
-		point.y = sin(degInRad) * oldX + cos(degInRad) * oldY;
+	for (int i = 0; i < vert.sizeIncrement(); ++i) {
+		auto oldX = vert[i].x;
+		auto oldZ = vert[i].z;
+		vert[i].x = cos(degInRad) * oldX - sin(degInRad) * oldZ;
+		vert[i].z = sin(degInRad) * oldX + cos(degInRad) * oldZ;
 	}
 }
