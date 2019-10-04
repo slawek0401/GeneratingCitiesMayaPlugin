@@ -23,6 +23,7 @@ std::vector<Building*> generateParisStyle(int circles) {
 			Building* b = new Building();
 			b->setAsCuboid(0,0);
 			setRandomHeight(b);
+			setRandomRoofAngle(b,50); // prawdopodobienstwo 50 
 			b->move(r, 0, 0);
 			b->rotateY(i * (360 / n));
 			buildings.push_back(b);
@@ -32,11 +33,32 @@ std::vector<Building*> generateParisStyle(int circles) {
 	return buildings;
 }
 
-Building* setRandomHeight(Building* buil) {
-	std::random_device r;
-	std::default_random_engine e1(r());
+Building* setRandomHeight(Building* building) { // z rozkladem normalnym (Gaussa)
+	static std::random_device r;
+	static std::default_random_engine e1(r());
 	std::normal_distribution<> normal_dist(1,0.5);
 	double height = normal_dist(e1);
-	buil->scale(1, height, 1);
-	return buil;
+	building->scale(1, height, 1);
+	return building;
+}
+
+Building* setRandomRoofAngle(Building* building, int percentageProbability) {
+	static std::random_device r;
+	static std::default_random_engine e1(r());
+	std::uniform_int_distribution<int> uniform_dist(0, 99);
+	int val = uniform_dist(e1);
+	if (val < percentageProbability) {
+		/*MFloatPoint newPoint = building->vert[0];
+		newPoint.y *= 1.1;
+		building->vert.set(newPoint, 0);
+		newPoint = building->vert[1];
+		newPoint.y *= 1.1;
+		building->vert.set(newPoint, 1);*/
+	}
+	return building;
+}
+
+std::vector<Street*> getStreetSystem() {
+	std::vector<Street*> vec;
+	vec.push_back(new Street(3,1,2,10));
 }
