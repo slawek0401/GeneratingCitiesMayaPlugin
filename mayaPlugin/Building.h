@@ -10,11 +10,12 @@ class Building
 {
 public:
 	std::vector<Primitive*> prims;
+	std::vector<MFloatPoint> front;
 
 	Building();
 	~Building();
 
-	void setAsCuboid(int moveX, int moveZ);
+	void setAsCuboid(int moveX=0, int moveZ=0);
 	void move(double moveX, double moveY, double moveZ);
 	void scale(double scaleX, double scaleY, double scaleZ);
 	void scale(double scale);

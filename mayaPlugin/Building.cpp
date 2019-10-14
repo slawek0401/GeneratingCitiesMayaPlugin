@@ -18,16 +18,28 @@ void Building::setAsCuboid(int moveX, int moveZ)
 	auto primitive = new Primitive();
 	primitive->setAsCuboid(moveX, moveZ);
 	prims.push_back(primitive);
+	front.push_back(primitive->vert[6]);
+	front.push_back(primitive->vert[7]);
 }
 
 void Building::move(double moveX, double moveY, double moveZ) {
 	for (auto prim : prims) 
 		prim->move(moveX, moveY, moveZ);
+	for (int i = 0; i < front.size(); ++i) {
+		front[i].x += moveX;
+		front[i].y += moveY;
+		front[i].z += moveZ;
+	}
 }
 
 void Building::scale(double scaleX, double scaleY, double scaleZ) {
 	for (auto prim : prims)
 		prim->scale(scaleX, scaleY, scaleZ);
+	for (int i = 0; i < front.size(); ++i) {
+		front[i].x *= scaleX;
+		front[i].y *= scaleY;
+		front[i].z *= scaleZ;
+	}
 }
 
 void Building::scale(double scale) {
@@ -37,4 +49,11 @@ void Building::scale(double scale) {
 void Building::rotateY(double degrees) {
 	for (auto prim : prims)
 		prim->rotateY(degrees);
+	double degInRad = degrees * M_PI / 180;
+	for (int i = 0; i < front.size(); ++i) {
+		auto oldX = front[i].x;
+		auto oldZ = front[i].z;
+		front[i].x = cos(degInRad) * oldX - sin(degInRad) * oldZ;
+		front[i].z = sin(degInRad) * oldX + cos(degInRad) * oldZ;
+	}
 }

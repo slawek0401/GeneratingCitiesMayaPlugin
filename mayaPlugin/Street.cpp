@@ -2,7 +2,7 @@
 
 
 
-Street::Street(int x1=1, int z1=1, int width=2, int length=2)
+Street::Street(int x1, int z1, int width, int length)
 {
 	vert.append(MFloatPoint(x1, 0, z1));
 	vert.append(MFloatPoint(x1, 0, z1 + length));
