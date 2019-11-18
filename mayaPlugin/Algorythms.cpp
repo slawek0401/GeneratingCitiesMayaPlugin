@@ -66,6 +66,30 @@ std::vector<Street*> getStreetSystem() {
 	auto str = new Street(-1, -5, 2, 10);
 	str->rotateY(90);
 	vec.push_back(str);
+	auto str1 = new Street(5, 10, 2, 10);
+	vec.push_back(str1);
+	return vec;
+}
+
+std::vector<Street*> getManhatanStreetSystem() {
+	std::vector<Street*> vec;
+	int x1 = -30;
+	int y1 = -25;
+	for (int i = x1; i < 50; i += 8) {
+		for (int j = y1; j < 50; j += 12) {
+			auto str = new Street(0, 0, 2, 10);
+			str->move(i, 0, j);
+			vec.push_back(str);
+		}
+	}
+	for (int i = y1; i < 50; i += 8) {
+		for (int j = -32; j < 50; j += 12) {
+			auto str = new Street(0, 0, 2, 6);
+			str->rotateY(90);
+			str->move(i, 0, j);
+			vec.push_back(str);
+		}
+	}
 	return vec;
 }
 
@@ -97,7 +121,8 @@ std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets) {
 		MFloatPoint v1 = street->getVert()[0];
 		MFloatPoint v2 = street->getVert()[1];
 		MFloatPoint curr = v1;
-		while (isBetween(curr, v1, v2)) {
+		bool nextBuildingNeeded = true;
+		while (nextBuildingNeeded) {
 			Building* b = new Building();
 			b->setAsCuboid();
 			setRandomHeight(b);
@@ -108,13 +133,17 @@ std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets) {
 			if (turningNeeded(v1, v2, b->front[0], b->front[1]))
 				b->rotateY(180);
 			b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
-			vec.push_back(b);
+			if (isBetween(b->front[1], v1, v2) && isBetween(b->front[0], v1, v2))
+				vec.push_back(b);
+			else
+				nextBuildingNeeded = false;
 			curr = b->front[1];
 		}
 		//------------------------------------
 		v1 = street->getVert()[2];
 		v2 = street->getVert()[3];
 		curr = v1;
+		nextBuildingNeeded = true;
 		while (isBetween(curr, v1, v2)) {
 			Building* b = new Building();
 			b->setAsCuboid();
@@ -130,7 +159,10 @@ std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets) {
 			b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
 			show(b->front[0].x, b->front[0].z);
 			show(b->front[1].x, b->front[1].z);
-			vec.push_back(b);
+			if (isBetween(b->front[1], v1, v2) && isBetween(b->front[0], v1, v2))
+				vec.push_back(b);
+			else
+				nextBuildingNeeded = false;
 			curr = b->front[1];
 		}
 	}

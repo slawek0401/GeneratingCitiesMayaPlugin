@@ -9,28 +9,39 @@ Primitive::~Primitive()
 {
 }
 
-MFloatPointArray Primitive::getVert() {
-	return vert;
-}
-
-MIntArray Primitive::getpolCounts() {
-	return polCounts;
-}
-
-MIntArray Primitive::getpolConnects() {
-	return polConnects;
-}
-
 void Primitive::setAsCuboid(int moveX, int moveZ)
 {/*
-			1---------0
+ PODGL¥D
+			5---------4
 		   /|        /|
-		  5---------4 |
+		  1---------0 |
 		  |	|	    | |
 		  |	|    	| |
-		  |	2-------|-3
+		  |	6-------|-7
 		  |/        |/
-		  6---------7
+		  2---------3
+SIATKA
+			2----3
+			|	 |
+			6----7
+			|	 |
+			5----4
+			|	 |
+		5---1----0---4
+		|	|	 |	 |
+		6---2----3---7
+			
+SIATKA UV
+		   12----13
+			|	 |
+		   10----11
+			|	 |
+			8----9
+			|	 |
+		4---5----6---7
+		|	|	 |	 |
+		0---1----2---3
+
  */
 	vert.append(MFloatPoint(1 + moveX, 5, 1 + moveZ));  //0
 	vert.append(MFloatPoint(-1 + moveX, 5, 1 + moveZ)); //1
@@ -50,30 +61,57 @@ void Primitive::setAsCuboid(int moveX, int moveZ)
 	polConnects.append(2);
 	polConnects.append(3);
 
+	polConnects.append(5);
+	polConnects.append(4);
+	polConnects.append(7);
+	polConnects.append(6);
+
 	polConnects.append(4);
 	polConnects.append(5);
-	polConnects.append(6);
-	polConnects.append(7);
-
+	polConnects.append(1);
 	polConnects.append(0);
+
 	polConnects.append(1);
 	polConnects.append(5);
-	polConnects.append(4);
-
-	polConnects.append(1);
-	polConnects.append(2);
 	polConnects.append(6);
-	polConnects.append(5);
-
 	polConnects.append(2);
+
 	polConnects.append(3);
-	polConnects.append(7);
+	polConnects.append(2);
 	polConnects.append(6);
+	polConnects.append(7);
 
+	polConnects.append(4);
 	polConnects.append(0);
 	polConnects.append(3);
 	polConnects.append(7);
-	polConnects.append(4);
+
+	float u[14] = {
+			0.0, 0.3333, 0.6667, 1.0,
+			0.0, 0.3333, 0.6667, 1.0,
+			0.3333, 0.6667, 0.3333, 0.6667, 0.3333, 0.6667
+		};
+	float v[14] = {
+			0.0, 0.0, 0.0, 0.0,
+			0.25, 0.25, 0.25, 0.25,
+			0.5, 0.5, 0.75, 0.75, 1.0, 1.0
+		};
+	int ids[24] = {
+			6,5,1,2,
+			8,9,11,10,
+			9,8,5,6,
+			5,4,0,1,
+			13,12,10,11,
+			7,6,2,3
+	};
+	for (int i = 0; i < 6; ++i)
+		UVcounts.append(4);
+	for (int i = 0; i < 6 * 4; ++i)
+		UVids.append(ids[i]);
+	for (int i = 0; i < 14; ++i)
+		uArray.append(u[i]);
+	for (int i = 0; i < 14; ++i)
+		vArray.append(v[i]);
 }
 
 void Primitive::move(double moveX, double moveY, double moveZ) {
@@ -104,4 +142,27 @@ void Primitive::rotateY(double degrees) {
 		vert[i].x = cos(degInRad) * oldX - sin(degInRad) * oldZ;
 		vert[i].z = sin(degInRad) * oldX + cos(degInRad) * oldZ;
 	}
+}
+MFloatPointArray Primitive::getVert() {
+	return vert;
+}
+
+MIntArray Primitive::getpolCounts() {
+	return polCounts;
+}
+
+MIntArray Primitive::getpolConnects() {
+	return polConnects;
+}
+MFloatArray Primitive::getUArray() {
+	return uArray;
+}
+MFloatArray Primitive::getVArray() {
+	return vArray;
+}
+MIntArray Primitive::getUVids() {
+	return UVids;
+}
+MIntArray Primitive::getUVcounts() {
+	return UVcounts;
 }

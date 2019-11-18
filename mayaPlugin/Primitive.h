@@ -2,6 +2,7 @@
 
 #include <maya\MFloatPointArray.h>
 #include <maya\MIntArray.h>
+#include <maya\MFloatArray.h>
 #include <cmath>
 
 class Primitive
@@ -11,6 +12,10 @@ public:
 	MFloatPointArray vert;
 	MIntArray polCounts;
 	MIntArray polConnects;
+	MFloatArray uArray;
+	MFloatArray vArray;
+	MIntArray UVids;
+	MIntArray UVcounts;
 
 	Primitive();
 	~Primitive();
@@ -23,5 +28,9 @@ public:
 	MFloatPointArray getVert();
 	MIntArray getpolCounts();
 	MIntArray getpolConnects();
+	MFloatArray getUArray();
+	MFloatArray getVArray();
+	MIntArray getUVids();
+	MIntArray getUVcounts();
 };
 

@@ -57,3 +57,7 @@ void Building::rotateY(double degrees) {
 		front[i].z = sin(degInRad) * oldX + cos(degInRad) * oldZ;
 	}
 }
+
+double Building::frontWidth() {
+	return sqrt((front[0].x - front[1].x) * (front[0].x - front[1].x) + (front[0].y - front[1].y) * (front[0].y - front[1].y));
+}

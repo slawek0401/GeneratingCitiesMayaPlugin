@@ -20,4 +20,5 @@ public:
 	void scale(double scaleX, double scaleY, double scaleZ);
 	void scale(double scale);
 	void rotateY(double degrees);
+	double frontWidth();
 };
