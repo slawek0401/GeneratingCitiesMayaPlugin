@@ -3,23 +3,23 @@
 #include <maya\MFloatPointArray.h>
 #include <maya\MIntArray.h>
 #include <cmath>
+#include "Primitive.h"
+#include <vector>
 
 class Building
 {
 public:
-	MFloatPointArray vert;
-	MIntArray polCounts;
-	MIntArray polConnects;
+	std::vector<Primitive*> prims;
+	std::vector<MFloatPoint> front;
 
 	Building();
 	~Building();
 
-	void setAsCuboid(int moveX, int moveZ);
+	void setAsCuboid(int moveX=0, int moveZ=0);
 	void move(double moveX, double moveY, double moveZ);
 	void scale(double scaleX, double scaleY, double scaleZ);
 	void scale(double scale);
 	void rotateY(double degrees);
-	MFloatPointArray getVert();
-	MIntArray getpolCounts();
-	MIntArray getpolConnects();
+	double frontWidth();
+	void setNewHeight(double height);
 };
