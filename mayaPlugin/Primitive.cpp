@@ -86,7 +86,7 @@ SIATKA UV
 	polConnects.append(3);
 	polConnects.append(7);
 
-	float u[14] = {
+	/*float u[14] = {
 			0.0, 0.3333, 0.6667, 1.0,
 			0.0, 0.3333, 0.6667, 1.0,
 			0.3333, 0.6667, 0.3333, 0.6667, 0.3333, 0.6667
@@ -96,6 +96,7 @@ SIATKA UV
 			0.25, 0.25, 0.25, 0.25,
 			0.5, 0.5, 0.75, 0.75, 1.0, 1.0
 		};
+	
 	int ids[24] = {
 			6,5,1,2,
 			8,9,11,10,
@@ -103,6 +104,20 @@ SIATKA UV
 			5,4,0,1,
 			13,12,10,11,
 			7,6,2,3
+	};*/
+	float u[14] = {
+			0.0, 2.0, 2.0, 0.0
+	};
+	float v[14] = {
+			0.0, 0.0, 7.0, 7.0
+	}; 
+	int ids[24] = {
+			2,3,0,1,
+			2,3,0,1,
+			0,0,0,0,
+			2,3,0,1,
+			0,0,0,0,
+			2,3,0,1
 	};
 	for (int i = 0; i < 6; ++i)
 		UVcounts.append(4);
@@ -115,7 +130,7 @@ SIATKA UV
 }
 
 void Primitive::move(double moveX, double moveY, double moveZ) {
-	for (int i = 0; i < vert.sizeIncrement(); ++i) {
+	for (int i = 0; i < vert.length(); ++i) {
 		vert[i].x += moveX;
 		vert[i].y += moveY;
 		vert[i].z += moveZ;
@@ -123,7 +138,7 @@ void Primitive::move(double moveX, double moveY, double moveZ) {
 }
 
 void Primitive::scale(double scaleX, double scaleY, double scaleZ) {
-	for (int i = 0; i < vert.sizeIncrement(); ++i) {
+	for (int i = 0; i < vert.length(); ++i) {
 		vert[i].x *= scaleX;
 		vert[i].y *= scaleY;
 		vert[i].z *= scaleZ;
@@ -136,7 +151,7 @@ void Primitive::scale(double scale) {
 
 void Primitive::rotateY(double degrees) {
 	double degInRad = degrees * M_PI / 180;
-	for (int i = 0; i < vert.sizeIncrement(); ++i) {
+	for (int i = 0; i < vert.length(); ++i) {
 		auto oldX = vert[i].x;
 		auto oldZ = vert[i].z;
 		vert[i].x = cos(degInRad) * oldX - sin(degInRad) * oldZ;
@@ -165,4 +180,16 @@ MIntArray Primitive::getUVids() {
 }
 MIntArray Primitive::getUVcounts() {
 	return UVcounts;
+}
+
+void Primitive::setNewHeight(double height) {
+	double newHeight = ceil(5 * height);
+	for (int i = 0; i < vert.length(); ++i) 
+		if (vert[i].y > 0)
+			vert[i].y = newHeight;
+	for (int i = 0; i < vArray.length(); ++i)
+		if (vArray[i] > 0) {
+			vArray.remove(i);
+			vArray.insert(newHeight, i);
+		}
 }

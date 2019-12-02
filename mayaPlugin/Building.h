@@ -21,4 +21,5 @@ public:
 	void scale(double scale);
 	void rotateY(double degrees);
 	double frontWidth();
+	void setNewHeight(double height);
 };

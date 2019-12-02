@@ -35,13 +35,18 @@ std::vector<Building*> generateParisStyle(int circles) {
 }
 
 Building* setRandomHeight(Building* building) { // z rozkladem normalnym (Gaussa)
-	static std::random_device r;
-	static std::default_random_engine e1(r());
-	std::normal_distribution<> normal_dist(1,0.5);
-	double height = normal_dist(e1);
-	if (height <= 0)
-		height = 1;
-	building->scale(1, height, 1);
+	//static std::random_device r;
+	//static std::default_random_engine e1(r());
+	////std::normal_distribution<> normal_dist(6,4);
+	//std::lognormal_distribution<> dist(0,0.25);
+	//double height = dist(e1);
+	//MString a("elo ");
+	//a += height;
+	//MGlobal::displayInfo(a);
+	//if (height <= 0)
+	//	height = 1;
+	static RandomFactory rand;
+	building->setNewHeight(rand.getLogNormalValue());// scale(1, height, 1);
 	return building;
 }
 
@@ -63,11 +68,11 @@ Building* setRandomRoofAngle(Building* building, int percentageProbability) {
 
 std::vector<Street*> getStreetSystem() {
 	std::vector<Street*> vec;
-	auto str = new Street(-1, -5, 2, 10);
+	auto str = new Street(-1, -5, 2, 4);
 	str->rotateY(90);
 	vec.push_back(str);
-	auto str1 = new Street(5, 10, 2, 10);
-	vec.push_back(str1);
+	//auto str1 = new Street(5, 10, 2, 10);
+	//vec.push_back(str1);
 	return vec;
 }
 
@@ -82,10 +87,10 @@ std::vector<Street*> getManhatanStreetSystem() {
 			vec.push_back(str);
 		}
 	}
-	for (int i = y1; i < 50; i += 8) {
-		for (int j = -32; j < 50; j += 12) {
+	for (int i = x1+2; i < 50; i += 8) {
+		for (int j = y1; j < 50; j += 12) {
 			auto str = new Street(0, 0, 2, 6);
-			str->rotateY(90);
+			str->rotateY(-90);
 			str->move(i, 0, j);
 			vec.push_back(str);
 		}
@@ -120,53 +125,35 @@ std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets) {
 	for (Street* street : streets) {
 		MFloatPoint v1 = street->getVert()[0];
 		MFloatPoint v2 = street->getVert()[1];
-		MFloatPoint curr = v1;
-		bool nextBuildingNeeded = true;
-		while (nextBuildingNeeded) {
-			Building* b = new Building();
-			b->setAsCuboid();
-			setRandomHeight(b);
-			double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
-			double alfa2 = atan((b->front[0].z - b->front[1].z) / (b->front[0].x - b->front[1].x));
-			//show(alfa2, alfa1);
-			b->rotateY((alfa1 - alfa2)*180/M_PI);
-			if (turningNeeded(v1, v2, b->front[0], b->front[1]))
-				b->rotateY(180);
-			b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
-			if (isBetween(b->front[1], v1, v2) && isBetween(b->front[0], v1, v2))
-				vec.push_back(b);
-			else
-				nextBuildingNeeded = false;
-			curr = b->front[1];
-		}
-		//------------------------------------
+		getBuildingsAlongOneSideOfStreet(vec, v1, v2);
+
 		v1 = street->getVert()[2];
 		v2 = street->getVert()[3];
-		curr = v1;
-		nextBuildingNeeded = true;
-		while (isBetween(curr, v1, v2)) {
-			Building* b = new Building();
-			b->setAsCuboid();
-			setRandomHeight(b);
-			show(b->front[0].x, b->front[0].z);
-			double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
-			double alfa2 = atan((b->front[0].z - b->front[1].z) / (b->front[0].x - b->front[1].x));
-			show(alfa2, alfa1);
-			b->rotateY((alfa1 - alfa2) * 180 / M_PI);
-			if (turningNeeded(v1, v2, b->front[0], b->front[1]))
-				b->rotateY(180);
-			show(b->front[0].x, b->front[0].z);
-			b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
-			show(b->front[0].x, b->front[0].z);
-			show(b->front[1].x, b->front[1].z);
-			if (isBetween(b->front[1], v1, v2) && isBetween(b->front[0], v1, v2))
-				vec.push_back(b);
-			else
-				nextBuildingNeeded = false;
-			curr = b->front[1];
-		}
+		getBuildingsAlongOneSideOfStreet(vec, v1, v2);
 	}
 	return vec;
 }
 
-
+void getBuildingsAlongOneSideOfStreet(std::vector<Building*> &vec, MFloatPoint v1, MFloatPoint v2) {
+	MFloatPoint curr = v1;
+	bool nextBuildingNeeded = true;
+	while (nextBuildingNeeded) {
+		Building* b = new Building();
+		b->setAsCuboid();
+		setRandomHeight(b);
+		double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
+		double alfa2 = atan((b->front[0].z - b->front[1].z) / (b->front[0].x - b->front[1].x));
+		b->rotateY((alfa1 - alfa2) * 180 / M_PI);
+		if (turningNeeded(v1, v2, b->front[0], b->front[1]))
+			b->rotateY(180);
+		b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
+		if (isBetween(b->front[1], v1, v2) && isBetween(b->front[0], v1, v2)) {
+			vec.push_back(b);
+			curr = b->front[1];
+		}
+		else {
+			nextBuildingNeeded = false;
+			delete b;
+		}
+	}
+}

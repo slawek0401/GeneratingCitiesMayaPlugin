@@ -61,3 +61,8 @@ void Building::rotateY(double degrees) {
 double Building::frontWidth() {
 	return sqrt((front[0].x - front[1].x) * (front[0].x - front[1].x) + (front[0].y - front[1].y) * (front[0].y - front[1].y));
 }
+
+void Building::setNewHeight(double height) {
+	for (auto prim : prims)
+		prim->setNewHeight(height);
+}

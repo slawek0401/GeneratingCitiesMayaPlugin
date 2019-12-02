@@ -3,6 +3,7 @@
 #include <maya\MFloatPointArray.h>
 #include <maya\MIntArray.h>
 #include <maya\MFloatArray.h>
+#include <maya\MGlobal.h>
 #include <cmath>
 
 class Primitive
@@ -32,5 +33,6 @@ public:
 	MFloatArray getVArray();
 	MIntArray getUVids();
 	MIntArray getUVcounts();
+	void setNewHeight(double height);
 };
 
