@@ -84,7 +84,12 @@ std::vector<Street*> getManhatanStreetSystem() {
 		for (int j = y1; j < 50; j += 12) {
 			auto str = new Street(0, 0, 2, 10);
 			str->move(i, 0, j);
+			str->addBuildingAlongAllStreet();
 			vec.push_back(str);
+
+			auto crossing = new Street(0, 0, 2, 2);
+			crossing->move(i, 0, j - 2);
+			vec.push_back(crossing);
 		}
 	}
 	for (int i = x1+2; i < 50; i += 8) {
@@ -92,6 +97,8 @@ std::vector<Street*> getManhatanStreetSystem() {
 			auto str = new Street(0, 0, 2, 6);
 			str->rotateY(-90);
 			str->move(i, 0, j);
+			str->addBuildingAlongRelative(2, 4, true);
+			str->addBuildingAlongRelative(2, 4, false);
 			vec.push_back(str);
 		}
 	}
@@ -123,13 +130,15 @@ bool turningNeeded(MFloatPoint x, MFloatPoint y, MFloatPoint v, MFloatPoint w) {
 std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets) {
 	std::vector<Building*> vec;
 	for (Street* street : streets) {
-		MFloatPoint v1 = street->getVert()[0];
-		MFloatPoint v2 = street->getVert()[1];
-		getBuildingsAlongOneSideOfStreet(vec, v1, v2);
+		for (int i = 0; i < street->getBuildingsAlong().size() / 2; i += 2) {
+			MFloatPoint v1 = street->getVert()[i];
+			MFloatPoint v2 = street->getVert()[i+1];
+			getBuildingsAlongOneSideOfStreet(vec, v1, v2);
 
-		v1 = street->getVert()[2];
-		v2 = street->getVert()[3];
-		getBuildingsAlongOneSideOfStreet(vec, v1, v2);
+			/*v1 = street->getVert()[2];
+			v2 = street->getVert()[3];
+			getBuildingsAlongOneSideOfStreet(vec, v1, v2);*/
+		}
 	}
 	return vec;
 }

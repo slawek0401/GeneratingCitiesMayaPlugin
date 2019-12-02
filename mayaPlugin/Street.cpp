@@ -38,3 +38,25 @@ Street::Street(int x1, int z1, int width, int length)
 Street::~Street()
 {
 }
+
+void Street::addBuildingAlongAbsolute(MFloatPoint from, MFloatPoint to) {
+	buildingsAlong.push_back(from);
+	buildingsAlong.push_back(to);
+}
+
+void Street::addBuildingAlongRelative(float from, float to, bool left) {
+	MFloatPoint rel = left ? vert[0] : vert[3];
+	buildingsAlong.push_back(MFloatPoint(rel.x + from, rel.y, rel.z));
+	buildingsAlong.push_back(MFloatPoint(rel.x + to, rel.y, rel.z));
+}
+
+void Street::addBuildingAlongAllStreet() {
+	buildingsAlong.push_back(vert[0]);
+	buildingsAlong.push_back(vert[1]);
+	buildingsAlong.push_back(vert[3]);
+	buildingsAlong.push_back(vert[2]);
+}
+
+std::vector<MFloatPoint> Street::getBuildingsAlong() {
+	return buildingsAlong;
+}
