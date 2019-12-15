@@ -9,6 +9,12 @@ Texture::Texture(std::string sourceFile)
 	this->sourceFile = sourceFile;
 }
 
+Texture::Texture(std::string sourceFile, TextureType textureType, BuildingType buildingType) {
+	this->sourceFile = sourceFile;
+	this->textureType = textureType;
+	this->buildingType = buildingType;
+}
+
 Texture::Texture(std::string sourceFile, double width, double height)
 {
 	this->sourceFile = sourceFile;
@@ -26,6 +32,14 @@ std::string Texture::getsourceFile() {
 
 std::string Texture::getName() {
 	return name;
+}
+
+BuildingType Texture::getBuildingType() {
+	return this->buildingType;
+}
+
+TextureType Texture::getTextureType() {
+	return this->textureType;
 }
 
 void Texture::setName(std::string name) {

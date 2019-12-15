@@ -2,8 +2,10 @@
 
 
 
-Street::Street(int x1, int z1, int width, int length)
+Street::Street(BuildingType bType, int x1, int z1, int width, int length)
 {
+	this->neighbourhood = bType;
+
 	vert.append(MFloatPoint(x1, 0, z1));
 	vert.append(MFloatPoint(x1, 0, z1 + length));
 	vert.append(MFloatPoint(x1 + width, 0, z1 + length));
@@ -45,18 +47,27 @@ void Street::addBuildingAlongAbsolute(MFloatPoint from, MFloatPoint to) {
 }
 
 void Street::addBuildingAlongRelative(float from, float to, bool left) {
-	MFloatPoint rel = left ? vert[0] : vert[3];
-	buildingsAlong.push_back(MFloatPoint(rel.x + from, rel.y, rel.z));
-	buildingsAlong.push_back(MFloatPoint(rel.x + to, rel.y, rel.z));
+	MFloatPoint rel = left ? vert[0] : vert[2];
+	float wsp = left ? 1.0 : -1.0;
+	buildingsAlong.push_back(MFloatPoint(rel.x + from*wsp, rel.y, rel.z));
+	buildingsAlong.push_back(MFloatPoint(rel.x + to*wsp, rel.y, rel.z));
 }
 
 void Street::addBuildingAlongAllStreet() {
 	buildingsAlong.push_back(vert[0]);
 	buildingsAlong.push_back(vert[1]);
-	buildingsAlong.push_back(vert[3]);
 	buildingsAlong.push_back(vert[2]);
+	buildingsAlong.push_back(vert[3]);
 }
 
 std::vector<MFloatPoint> Street::getBuildingsAlong() {
 	return buildingsAlong;
+}
+
+BuildingType Street::getNeighbourhood() {
+	return neighbourhood;
+}
+
+void Street::setNeighbourhood(BuildingType bType) {
+	this->neighbourhood = bType;
 }

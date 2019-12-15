@@ -22,6 +22,16 @@ void Building::setAsCuboid(int moveX, int moveZ)
 	front.push_back(primitive->vert[7]);
 }
 
+void Building::addPrimitive(Primitive* primitive) {
+	prims.push_back(primitive);
+}
+
+void Building::addMainPrimitive(Primitive* primitive) {
+	prims.push_back(primitive);
+	front.push_back(primitive->vert[6]);
+	front.push_back(primitive->vert[7]);
+}
+
 void Building::move(double moveX, double moveY, double moveZ) {
 	for (auto prim : prims) 
 		prim->move(moveX, moveY, moveZ);
@@ -64,5 +74,19 @@ double Building::frontWidth() {
 
 void Building::setNewHeight(double height) {
 	for (auto prim : prims)
-		prim->setNewHeight(height);
+		prim->setNewScaleHeight(height);
+}
+
+double Building::getHeight() {
+	double maxHeight = 0.0;
+	for (auto prim : prims) {
+		double currHeight = prim->getHeight();
+		if (maxHeight < currHeight)
+			maxHeight = currHeight;
+	}
+	return maxHeight;
+}
+
+void Building::assignMainTexture(Texture tex) {
+	prims[0]->assignTexture(tex);
 }

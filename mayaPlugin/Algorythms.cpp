@@ -1,4 +1,7 @@
 #include "Algorythms.h"
+#include "Pyramid.h"
+#include "Cuboid.h"
+#include "TriangularPrism.h"
 #include <maya/MGlobal.h>
 
 std::vector<Building*> generateManhatanStyle(int n, int m) {
@@ -24,7 +27,6 @@ std::vector<Building*> generateParisStyle(int circles) {
 			Building* b = new Building();
 			b->setAsCuboid(0,0);
 			setRandomHeight(b);
-			setRandomRoofAngle(b,50); // prawdopodobienstwo 50 
 			b->move(r, 0, 0);
 			b->rotateY(i * (360 / n));
 			buildings.push_back(b);
@@ -34,71 +36,81 @@ std::vector<Building*> generateParisStyle(int circles) {
 	return buildings;
 }
 
-Building* setRandomHeight(Building* building) { // z rozkladem normalnym (Gaussa)
-	//static std::random_device r;
-	//static std::default_random_engine e1(r());
-	////std::normal_distribution<> normal_dist(6,4);
-	//std::lognormal_distribution<> dist(0,0.25);
-	//double height = dist(e1);
-	//MString a("elo ");
-	//a += height;
-	//MGlobal::displayInfo(a);
-	//if (height <= 0)
-	//	height = 1;
+Building* setRandomHeight(Building* building) {
 	static RandomFactory rand;
-	building->setNewHeight(rand.getLogNormalValue());// scale(1, height, 1);
+	building->setNewHeight(rand.getLogNormalValue());
 	return building;
 }
 
-Building* setRandomRoofAngle(Building* building, int percentageProbability) {
-	static std::random_device r;
-	static std::default_random_engine e1(r());
-	std::uniform_int_distribution<int> uniform_dist(0, 99);
-	int val = uniform_dist(e1);
-	if (val < percentageProbability) {
-		/*MFloatPoint newPoint = building->vert[0];
-		newPoint.y *= 1.1;
-		building->vert.set(newPoint, 0);
-		newPoint = building->vert[1];
-		newPoint.y *= 1.1;
-		building->vert.set(newPoint, 1);*/
-	}
+Primitive* setRandomHeight(Primitive* prim) {
+	static RandomFactory rand;
+	prim->setNewScaleHeight(rand.getLogNormalValue());
+	return prim;
+}
+
+Building* setRandomWidth(Building* building) {
+	static RandomFactory rand;
+	building->scale(rand.getLogNormalValue(),1,1);
 	return building;
 }
 
 std::vector<Street*> getStreetSystem() {
 	std::vector<Street*> vec;
-	auto str = new Street(-1, -5, 2, 4);
+	auto str = new Street(BuildingType::wiezowiec, -1, -5, 2, 10);
 	str->rotateY(90);
+	str->addBuildingAlongAllStreet();
 	vec.push_back(str);
 	//auto str1 = new Street(5, 10, 2, 10);
 	//vec.push_back(str1);
 	return vec;
 }
 
-std::vector<Street*> getManhatanStreetSystem() {
-	std::vector<Street*> vec;
-	int x1 = -30;
-	int y1 = -25;
-	for (int i = x1; i < 50; i += 8) {
-		for (int j = y1; j < 50; j += 12) {
-			auto str = new Street(0, 0, 2, 10);
-			str->move(i, 0, j);
-			str->addBuildingAlongAllStreet();
-			vec.push_back(str);
+BuildingType getBuildingTypeByDistanceFromCentre(int cityWidth, int cityLength, int x, int y) {
+	static double cityDiagonal = sqrt(cityLength * cityLength + cityWidth * cityWidth)/2;
+	double currentDiagonal = sqrt(x * x + y * y);
+	BuildingType types[] = {kamienica, wiezowiec, blok, dom_jednorodzinny};
+	double values[] = { 0.2, 0.4, 0.65, 1.0 };
+	for (int i = 0; i < 4; ++i) 
+		if (currentDiagonal / cityDiagonal <= values[i])
+			return types[i];
+	return dom_jednorodzinny;
+}
 
-			auto crossing = new Street(0, 0, 2, 2);
-			crossing->move(i, 0, j - 2);
+std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory) {
+	std::vector<Street*> vec;
+	int cityWidth = 82;
+	int cityLength = 82;
+	int vertStreetWidth = 2;
+	int vertStreetLength = 10;
+	int horStreetWidth = 2;
+	int horStreetLength = 6;
+
+	int x1 = - cityWidth / 2;
+	int y1 = - cityLength / 2;
+	
+	for (int i = x1; i < cityWidth / 2; i += horStreetLength + vertStreetWidth) {
+		for (int j = y1; j < cityLength / 2; j += vertStreetLength + horStreetWidth) {
+			if (j + vertStreetLength < cityLength / 2) {
+				auto str = new Street(getBuildingTypeByDistanceFromCentre(cityWidth, cityLength, i, j), 0, 0, vertStreetWidth, vertStreetLength);
+				str->move(i, 0, j);
+				str->addBuildingAlongAllStreet();
+				str->assignTexture(texFactory.getRandomStreetTexture());
+				vec.push_back(str);
+			}
+			auto crossing = new Street(BuildingType::undefined, 0, 0, vertStreetWidth, horStreetWidth); // moze odwrotnie
+			crossing->move(i, 0, j - horStreetWidth);
+			crossing->assignTexture(texFactory.getRandomStreetTexture());
 			vec.push_back(crossing);
 		}
 	}
-	for (int i = x1+2; i < 50; i += 8) {
-		for (int j = y1; j < 50; j += 12) {
-			auto str = new Street(0, 0, 2, 6);
+	for (int i = x1+vertStreetWidth; i < cityWidth / 2; i += horStreetLength + vertStreetWidth) {
+		for (int j = y1; j < cityLength / 2; j += vertStreetLength + horStreetWidth) {
+			auto str = new Street(getBuildingTypeByDistanceFromCentre(cityWidth, cityLength, i, j), 0, 0, horStreetWidth, horStreetLength);
 			str->rotateY(-90);
 			str->move(i, 0, j);
-			str->addBuildingAlongRelative(2, 4, true);
-			str->addBuildingAlongRelative(2, 4, false);
+			str->addBuildingAlongRelative(vertStreetWidth, horStreetLength - vertStreetWidth, true);
+			str->addBuildingAlongRelative(vertStreetWidth, horStreetLength - vertStreetWidth, false);
+			str->assignTexture(texFactory.getRandomStreetTexture());
 			vec.push_back(str);
 		}
 	}
@@ -111,12 +123,37 @@ bool isBetween(MFloatPoint a, MFloatPoint x1, MFloatPoint x2) {
 		((a.z >= x1.z - 0.02 && a.z <= x2.z + 0.02) || (a.z <= x1.z + 0.02 && a.z >= x2.z - 0.02));
 }
 
-void show(double x, double z) {
-	MString a(" ");
-	a += x;
-	a += "   ";
-	a += z;
-	MGlobal::displayInfo(a);
+std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets, TextureFactory texFactory) {
+	std::vector<Building*> vec;
+	for (Street* street : streets) {
+		for (int i = 0; i < street->getBuildingsAlong().size(); i += 2) {
+			MFloatPoint v1 = street->getBuildingsAlong()[i];
+			MFloatPoint v2 = street->getBuildingsAlong()[i+1];
+			getBuildingsAlongOneSideOfStreet(vec, v1, v2, texFactory, street->getNeighbourhood());
+		}
+	}
+	return vec;
+}
+
+void getBuildingsAlongOneSideOfStreet(std::vector<Building*> &vec, MFloatPoint v1, MFloatPoint v2, TextureFactory texFactory, BuildingType bType) {
+	MFloatPoint currentPoint = v1;
+	bool nextBuildingNeeded = true;
+	while (nextBuildingNeeded) {
+		Building* b = BuildingsFactory::createSpecifiedTypeBuilding(bType, texFactory);
+		if (countSegmentLength(currentPoint, v2) <= countSegmentLength(b->front[0], b->front[1])) {
+			nextBuildingNeeded = false;
+			if (countSegmentLength(currentPoint, v2) >= 1) {
+				b->scale(1 / countSegmentLength(b->front[0], b->front[1]), 1, 1);
+				currentPoint = alignAndAdd(v1, v2, b, vec, currentPoint);
+			}
+			else {
+				delete b;
+			}
+		}
+		else {
+			currentPoint = alignAndAdd(v1, v2, b, vec, currentPoint);
+		}
+	}
 }
 
 bool turningNeeded(MFloatPoint x, MFloatPoint y, MFloatPoint v, MFloatPoint w) {
@@ -124,45 +161,22 @@ bool turningNeeded(MFloatPoint x, MFloatPoint y, MFloatPoint v, MFloatPoint w) {
 	if (b1)
 		return false;
 	return !((x.z > y.z && v.z > w.z) || (x.z < y.z && v.z < w.z));
-
 }
 
-std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets) {
-	std::vector<Building*> vec;
-	for (Street* street : streets) {
-		for (int i = 0; i < street->getBuildingsAlong().size() / 2; i += 2) {
-			MFloatPoint v1 = street->getVert()[i];
-			MFloatPoint v2 = street->getVert()[i+1];
-			getBuildingsAlongOneSideOfStreet(vec, v1, v2);
-
-			/*v1 = street->getVert()[2];
-			v2 = street->getVert()[3];
-			getBuildingsAlongOneSideOfStreet(vec, v1, v2);*/
-		}
-	}
-	return vec;
+double countSegmentLength(const MFloatPoint& a1, const MFloatPoint& a2) {
+	double x = a1.x - a2.x;
+	double y = a1.y - a2.y;
+	double z = a1.z - a2.z;
+	return sqrt(x * x + y * y + z * z);
 }
 
-void getBuildingsAlongOneSideOfStreet(std::vector<Building*> &vec, MFloatPoint v1, MFloatPoint v2) {
-	MFloatPoint curr = v1;
-	bool nextBuildingNeeded = true;
-	while (nextBuildingNeeded) {
-		Building* b = new Building();
-		b->setAsCuboid();
-		setRandomHeight(b);
-		double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
-		double alfa2 = atan((b->front[0].z - b->front[1].z) / (b->front[0].x - b->front[1].x));
-		b->rotateY((alfa1 - alfa2) * 180 / M_PI);
-		if (turningNeeded(v1, v2, b->front[0], b->front[1]))
-			b->rotateY(180);
-		b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
-		if (isBetween(b->front[1], v1, v2) && isBetween(b->front[0], v1, v2)) {
-			vec.push_back(b);
-			curr = b->front[1];
-		}
-		else {
-			nextBuildingNeeded = false;
-			delete b;
-		}
-	}
+MFloatPoint alignAndAdd(const MFloatPoint& v1, const MFloatPoint& v2, Building* b, std::vector<Building*>& vec, const MFloatPoint& curr) {
+	double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
+	double alfa2 = atan((b->front[0].z - b->front[1].z) / (b->front[0].x - b->front[1].x));
+	b->rotateY((alfa1 - alfa2) * 180 / M_PI);
+	if (turningNeeded(v1, v2, b->front[0], b->front[1]))
+		b->rotateY(180);
+	b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
+	vec.push_back(b);
+	return b->front[1];
 }

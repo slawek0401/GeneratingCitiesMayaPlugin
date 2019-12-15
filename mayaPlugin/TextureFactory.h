@@ -5,18 +5,24 @@
 
 class TextureFactory
 {
-	std::vector<Texture> availableWallsTextures;
-	std::vector<Texture> availableStreetTextures;
+	std::vector<Texture> availableTextures;
+
+	int findIndexByFileName(std::string fileName);
 public:
 	TextureFactory();
 	~TextureFactory();
 	void load();
-	Texture getRandomWallTexture();
-	Texture getWallTextureByIndex(size_t index);
-	std::vector<Texture>* getAllAviableWallTextures(); //zwracana jest kopia, a nie powinna, chcemy referencje
+	void setNameToTexture(Texture tex, std::string name);
 
+	Texture getRandomTextureByType(TextureType type);
+	Texture getRandomWallTexture();
+	Texture getRandomWallTextureWithSpecifiedType(BuildingType type);
+	std::vector<Texture> getAllAviableWallTextures();
+	std::vector<Texture> getAllAviableWallTexturesWithSpecifiedType(BuildingType type);
 	Texture getRandomStreetTexture();
-	Texture getStreetTextureByIndex(size_t index);
-	std::vector<Texture>* getAllAviableStreetTextures();
+	std::vector<Texture> getAllAviableStreetTextures();
+	std::vector<Texture> getTexturesByType(TextureType type);
+	std::vector<Texture> getAllTextures();
+	
 };
 
