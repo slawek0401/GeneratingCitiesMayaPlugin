@@ -12,7 +12,7 @@ class BuildingsFactory
 {
 private:
 	static Building* setRandomHeight(Building* building);
-	static Primitive* setRandomHeight(Primitive* prim);
+	static Primitive* setRandomHeight(Primitive* prim, double ratio);
 	static Building* setRandomWidth(Building* building);
 
 public:

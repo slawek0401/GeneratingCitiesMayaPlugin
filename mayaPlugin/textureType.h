@@ -2,5 +2,7 @@ enum TextureType {
 	jezdnia,
 	chodnik,
 	dach,
-	sciana
+	sciana,
+	trawa,
+	asfalt
 };

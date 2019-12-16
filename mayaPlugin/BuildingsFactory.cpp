@@ -57,7 +57,7 @@ Building* BuildingsFactory::createSkyscraper(TextureFactory texFactory) {
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::wiezowiec);
 	prim->assignTexture(wallTexture);
-	setRandomHeight(prim);
+	setRandomHeight(prim, 1.4);
 	b->addMainPrimitive(prim);
 	static RandomFactory rand;
 	if (rand.getLinearValue(0, 100) < 5) {
@@ -75,16 +75,14 @@ Building* BuildingsFactory::createTenement(TextureFactory texFactory) {
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::kamienica);
 	prim->assignTexture(wallTexture);
-	setRandomHeight(prim);
+	setRandomHeight(prim, 0.8);
 	b->addMainPrimitive(prim);
 	static RandomFactory rand;
-	//if (rand.getLinearValue(0, 100) < 5) {
-		Primitive* roof = new TriangularPrism(0, 0, 0);
-		roof->scale(1, (double)rand.getLinearValue(5,12) / 10, 1);
-		roof->move(0, b->getHeight(), 0);
-		((TriangularPrism*)roof)->assignTexture(wallTexture, texFactory.getRandomTextureByType(dach));
-		b->addPrimitive(roof);
-	//}
+	Primitive* roof = new TriangularPrism(0, 0, 0);
+	roof->scale(1, (double)rand.getLinearValue(5,12) / 10, 1);
+	roof->move(0, b->getHeight(), 0);
+	((TriangularPrism*)roof)->assignTexture(wallTexture, texFactory.getRandomTextureByType(dach));
+	b->addPrimitive(roof);
 	setRandomWidth(b);
 	return b;
 }
@@ -94,7 +92,7 @@ Building* BuildingsFactory::createBlock(TextureFactory texFactory) {
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::blok);
 	prim->assignTexture(wallTexture);
-	setRandomHeight(prim);
+	setRandomHeight(prim, 1);
 	b->addMainPrimitive(prim);
 	setRandomWidth(b);
 	return b;
@@ -106,9 +104,9 @@ Building* BuildingsFactory::setRandomHeight(Building* building) {
 	return building;
 }
 
-Primitive* BuildingsFactory::setRandomHeight(Primitive* prim) {
+Primitive* BuildingsFactory::setRandomHeight(Primitive* prim, double ratio) {
 	static RandomFactory rand;
-	prim->setNewScaleHeight(rand.getLogNormalValue());
+	prim->setNewScaleHeight(rand.getLogNormalValue() * ratio);
 	return prim;
 }
 

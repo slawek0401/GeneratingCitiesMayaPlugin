@@ -7,6 +7,7 @@
 #include "Street.h"
 #include "TextureFactory.h"
 #include "BuildingsFactory.h"
+#include "Plane.h"
 
 std::vector<Building*> generateManhatanStyle(int n, int m);
 std::vector<Building*> generateParisStyle(int circles);
@@ -20,7 +21,9 @@ double countSegmentLength(const MFloatPoint& a1, const  MFloatPoint& a2);
 MFloatPoint alignAndAdd(const MFloatPoint& v1, const MFloatPoint& v2, Building* b, std::vector<Building*>& vec, const MFloatPoint& curr);
 bool turningNeeded(MFloatPoint x, MFloatPoint y, MFloatPoint v, MFloatPoint w);
 BuildingType getBuildingTypeByDistanceFromCentre(int cityWidth, int cityLength, int x, int y);
+void addParkPoints(std::vector<std::vector<int>> &parkPoints, int x, int y, int vertStreetLength, int vertStreetWidth, int horStreetLength, int horStreetWidth);
 
 //streets
 std::vector<Street*> getStreetSystem();
-std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory);
+std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength);
+std::vector<Primitive*> getAdditives(std::vector<Street*> streets, TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength);

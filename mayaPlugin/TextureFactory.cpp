@@ -20,14 +20,16 @@ void TextureFactory::load() {
 		"dom_jednorodzinny",
 		"jezdnia",
 		"kamienica",
-		"wiezowiec"
+		"wiezowiec",
+		"trawa",
+		"asfalt"
 	};
-	unsigned counts[] = {4,0,10,3,3,6,9};
-	TextureType textureTypes[] = { sciana, chodnik, dach, sciana, jezdnia, sciana, sciana };
-	BuildingType buildingTypes[] = {blok, undefined, undefined, dom_jednorodzinny, undefined, kamienica, wiezowiec };
+	unsigned counts[] = {4,4,10,3,3,6,9,3,2};
+	TextureType textureTypes[] = { sciana, chodnik, dach, sciana, jezdnia, sciana, sciana, trawa, asfalt };
+	BuildingType buildingTypes[] = {blok, undefined, undefined, dom_jednorodzinny, undefined, kamienica, wiezowiec, undefined, undefined };
 	
 	std::string nameBase = "tex";
-	for (int i = 0; i < 7; ++i) 
+	for (int i = 0; i < sizeof counts / sizeof counts[0]; ++i) //9
 		for (int j = 1; j <= counts[i]; ++j) {
 			Texture tex(folders[i] + "\\\\" + nameBase + std::to_string(j), textureTypes[i], buildingTypes[i]);
 			availableTextures.push_back(tex);
