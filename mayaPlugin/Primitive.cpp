@@ -1,5 +1,5 @@
 #include "Primitive.h"
-
+#include <string>
 Primitive::Primitive()
 {
 }
@@ -56,32 +56,32 @@ SIATKA UV
 	for (int i = 0; i < 6; ++i)
 		polCounts.append(4);
 
-	polConnects.append(0);
+	polConnects.append(0);//front
 	polConnects.append(1);
 	polConnects.append(2);
 	polConnects.append(3);
 
-	polConnects.append(5);
+	polConnects.append(5);//back
 	polConnects.append(4);
 	polConnects.append(7);
 	polConnects.append(6);
 
-	polConnects.append(4);
+	polConnects.append(4);//top
 	polConnects.append(5);
 	polConnects.append(1);
 	polConnects.append(0);
 
-	polConnects.append(1);
+	polConnects.append(1);//left
 	polConnects.append(5);
 	polConnects.append(6);
 	polConnects.append(2);
 
-	polConnects.append(3);
+	polConnects.append(3);//bottom
 	polConnects.append(2);
 	polConnects.append(6);
 	polConnects.append(7);
 
-	polConnects.append(4);
+	polConnects.append(4);//right
 	polConnects.append(0);
 	polConnects.append(3);
 	polConnects.append(7);
@@ -105,27 +105,106 @@ SIATKA UV
 			13,12,10,11,
 			7,6,2,3
 	};*/
-	float u[14] = {
+	oneTextureOnWhole = true;
+	float u[8] = {
+			0.0, 2.0, 2.0, 0.0,
 			0.0, 2.0, 2.0, 0.0
 	};
-	float v[14] = {
+	float v[8] = {
+			0.0, 0.0, 7.0, 7.0,
 			0.0, 0.0, 7.0, 7.0
 	}; 
 	int ids[24] = {
-			2,3,0,1,
-			2,3,0,1,
-			0,0,0,0,
-			2,3,0,1,
-			0,0,0,0,
-			2,3,0,1
+			2,3,0,1,//front
+			2,3,0,1,//back
+			0,0,0,0,//top
+			6,7,4,5,//left
+			0,0,0,0,//bottom
+			6,7,4,5//right
 	};
+	xTexCoordsIndexFrom = 0;
+	xTexCoordsIndexTo = 5;
+	zTexCoordsIndexFrom = 4;
+	zTexCoordsIndexTo = 8;
 	for (int i = 0; i < 6; ++i)
 		UVcounts.append(4);
 	for (int i = 0; i < 6 * 4; ++i)
 		UVids.append(ids[i]);
-	for (int i = 0; i < 14; ++i)
+	for (int i = 0; i < 8; ++i)
 		uArray.append(u[i]);
-	for (int i = 0; i < 14; ++i)
+	for (int i = 0; i < 8; ++i)
+		vArray.append(v[i]);
+}
+
+void Primitive::setAsPyramid(int moveX, int moveY, int moveZ)
+{/*
+ PODGL¥D  
+	             2    	  
+		      / / \ \
+		  	4--/---\--3
+		   / /     \ /
+		  0---------1
+ */
+	vert.append(MFloatPoint(-1 + moveX, 0 + moveY, 1 + moveZ));  //0
+	vert.append(MFloatPoint(1 + moveX, 0 + moveY, 1 + moveZ)); //1
+	vert.append(MFloatPoint(0 + moveX, 2 + moveY, 0 + moveZ)); //2
+	vert.append(MFloatPoint(1 + moveX, 0 + moveY, -1 + moveZ)); //3
+	vert.append(MFloatPoint(-1 + moveX, 0 + moveY, -1 + moveZ));  //4
+	
+
+	polCounts.append(4);
+	for (int i = 0; i < 4; ++i)
+		polCounts.append(3);
+
+	polConnects.append(1);//bottom
+	polConnects.append(0);
+	polConnects.append(4);
+	polConnects.append(3);
+
+	polConnects.append(0);//front
+	polConnects.append(1);
+	polConnects.append(2);
+
+	polConnects.append(3);//back
+	polConnects.append(4);
+	polConnects.append(2);
+
+	polConnects.append(4);//left
+	polConnects.append(0);
+	polConnects.append(2);
+
+	polConnects.append(1);//right
+	polConnects.append(3);
+	polConnects.append(2);
+
+	oneTextureOnWhole = true;
+	float u[8] = {
+			0.0, 2.0, 1.0,
+			0.0, 2.0, 1.0
+	};
+	float v[8] = {
+			0.0, 0.0, 2.0,
+			0.0, 0.0, 2.0
+	};
+	int ids[24] = {
+			0,0,0,0,//bottom
+			0,1,2,//front
+			0,1,2,//back
+			3,4,5,//left
+			3,4,5//right
+	};
+	xTexCoordsIndexFrom = 0;
+	xTexCoordsIndexTo = 4;
+	zTexCoordsIndexFrom = 3;
+	zTexCoordsIndexTo = 6;
+	UVcounts.append(4);
+	for (int i = 0; i < 4; ++i)
+		UVcounts.append(3);
+	for (int i = 0; i < 4 + 3 * 4; ++i)
+		UVids.append(ids[i]);
+	for (int i = 0; i < 6; ++i)
+		uArray.append(u[i]);
+	for (int i = 0; i < 6; ++i)
 		vArray.append(v[i]);
 }
 
@@ -139,14 +218,58 @@ void Primitive::move(double moveX, double moveY, double moveZ) {
 
 void Primitive::scale(double scaleX, double scaleY, double scaleZ) {
 	for (int i = 0; i < vert.length(); ++i) {
-		vert[i].x *= scaleX;
-		vert[i].y *= scaleY;
-		vert[i].z *= scaleZ;
+		if (scaleX != 1) 
+			vert[i].x *= scaleX;
+		if (scaleY != 1) 
+			vert[i].y *= scaleY;
+		if (scaleZ != 1) 
+			vert[i].z *= scaleZ;
+	}
+	if (scaleX != 1) 
+		scaleXTexture(scaleX);
+	if (scaleY != 1) 
+		scaleYTexture(scaleY);
+	if (scaleZ != 1)
+		scaleZTexture(scaleZ);
+}
+
+void Primitive::scaleXTexture(double scale) {
+	for (int i = xTexCoordsIndexFrom; i < xTexCoordsIndexTo; ++i) {
+		float newVal = round(uArray[i] * scale);
+		if (newVal == 0)
+			newVal = 1;
+		if (uArray[i] > 0)
+			replace(i, newVal, uArray);
 	}
 }
 
+void Primitive::scaleZTexture(double scale) {
+	for (int i = zTexCoordsIndexFrom; i < zTexCoordsIndexTo; ++i) {
+		float newVal = round(uArray[i] * scale);
+		if (newVal == 0)
+			newVal = 1;
+		if (uArray[i] > 0)
+			replace(i, newVal, uArray);
+	}
+}
+void Primitive::scaleYTexture(double scale) {
+	for (int i = 0; i < vArray.length(); ++i) {
+		float newVal = round(vArray[i] * scale);
+		if (newVal == 0)
+			newVal = 1;
+		if (vArray[i] > 0)
+			replace(i, newVal, vArray);
+	}
+}
+
+void Primitive::replace(int i, float newVal, MFloatArray& array){
+	array.remove(i);
+	array.insert(newVal, i);
+}
+
 void Primitive::scale(double scale) {
-	this->scale(scale, scale, scale);
+	if (scale != 1)
+		this->scale(scale, scale, scale);
 }
 
 void Primitive::rotateY(double degrees) {
@@ -182,14 +305,50 @@ MIntArray Primitive::getUVcounts() {
 	return UVcounts;
 }
 
-void Primitive::setNewHeight(double height) {
+void Primitive::setNewScaleHeight(double height) {
 	double newHeight = ceil(5 * height);
-	for (int i = 0; i < vert.length(); ++i) 
+	setNewHeight(newHeight);
+}
+
+void Primitive::setNewHeight(double height) {
+	double newHeight = ceil(height);
+	for (int i = 0; i < vert.length(); ++i)
 		if (vert[i].y > 0)
 			vert[i].y = newHeight;
 	for (int i = 0; i < vArray.length(); ++i)
-		if (vArray[i] > 0) {
-			vArray.remove(i);
-			vArray.insert(newHeight, i);
-		}
+		if (vArray[i] > 0)
+			replace(i, newHeight, vArray);
+}
+
+double Primitive::getHeight() {
+	double maxHeight = 0.0;
+	for (auto x : vert) {
+		double currHeight = x.y;
+		if (maxHeight < currHeight)
+			maxHeight = currHeight;
+	}
+	return maxHeight;
+}
+
+bool Primitive::hasOneTextureOnWhole() {
+	return oneTextureOnWhole;
+}
+void Primitive::assignTexture(Texture tex) {
+	textures.push_back(tex);
+}
+
+std::vector<Texture> Primitive::getTextures() {
+	return textures;
+}
+
+std::vector<std::vector<int>> Primitive::getTexturesOnFaceIndexes(){
+	return texOnFaceIndexes;
+}
+
+void Primitive::setNameInMaya(std::string name) {
+	this->nameInMaya = name;
+}
+
+std::string Primitive::getNameInMaya() {
+	return nameInMaya;
 }

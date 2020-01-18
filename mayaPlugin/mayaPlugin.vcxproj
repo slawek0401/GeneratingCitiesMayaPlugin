@@ -167,16 +167,24 @@
   <ItemGroup>
     <ClInclude Include="Algorythms.h" />
     <ClInclude Include="Building.h" />
+    <ClInclude Include="BuildingsFactory.h" />
+    <ClInclude Include="Cuboid.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="Pyramid.h" />
     <ClInclude Include="RandomFactory.h" />
     <ClInclude Include="Street.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureFactory.h" />
+    <ClInclude Include="TriangularPrism.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Algorythms.cpp" />
     <ClCompile Include="Building.cpp" />
+    <ClCompile Include="BuildingsFactory.cpp" />
+    <ClCompile Include="buildingType.h" />
+    <ClCompile Include="Cuboid.cpp" />
     <ClCompile Include="mayaPlugin.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -184,11 +192,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="RandomFactory.cpp" />
     <ClCompile Include="Street.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureFactory.cpp" />
+    <ClCompile Include="textureType.h" />
+    <ClCompile Include="TriangularPrism.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

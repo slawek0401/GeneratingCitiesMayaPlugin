@@ -2,19 +2,50 @@
 
 
 
-Street::Street(int x1, int z1, int width, int length)
+Street::Street(BuildingType bType, double walkPathFrac, int x1, int z1, int width, int length)
 {
-	vert.append(MFloatPoint(x1, 0, z1));
-	vert.append(MFloatPoint(x1, 0, z1 + length));
-	vert.append(MFloatPoint(x1 + width, 0, z1 + length));
-	vert.append(MFloatPoint(x1 + width, 0, z1));
+	this->neighbourhood = bType;
 
-	polCounts.append(4);
+	/*
+	0-4---7-3
+	| |   | |
+	| |   | |
+	| |   | |
+	1-5---6-2
+	*/
+	vert.append(MFloatPoint(x1, 0, z1)); //0
+	vert.append(MFloatPoint(x1, 0, z1 + length)); //1
+	vert.append(MFloatPoint(x1 + width, 0, z1 + length)); //2
+	vert.append(MFloatPoint(x1 + width, 0, z1)); //3
 
-	polConnects.append(0);
+	vert.append(MFloatPoint(x1 + walkPathFrac * width, 0, z1)); //4
+	vert.append(MFloatPoint(x1 + walkPathFrac * width, 0, z1 + length)); //5
+	vert.append(MFloatPoint(x1 + (1 - walkPathFrac) * width, 0, z1 + length)); //6
+	vert.append(MFloatPoint(x1 + (1 - walkPathFrac) * width, 0, z1)); //7
+	
+	for (int i = 0; i < 3; ++i)
+		polCounts.append(4);
+
+	polConnects.append(0); //chodnik
 	polConnects.append(1);
+	polConnects.append(5);
+	polConnects.append(4);
+
+	polConnects.append(4); //jezdnia
+	polConnects.append(5);
+	polConnects.append(6);
+	polConnects.append(7);
+
+	polConnects.append(7); //chodnik
+	polConnects.append(6);
 	polConnects.append(2);
 	polConnects.append(3);
+
+	oneTextureOnWhole = false;
+	std::vector<int> walkPaths{ 0, 2 };
+	std::vector<int> road{ 1 };
+	texOnFaceIndexes.push_back(walkPaths); 
+	texOnFaceIndexes.push_back(road); 
 
 	float u[4] = {
 			0.0, 1.0, 1.0, 0.0
@@ -22,11 +53,14 @@ Street::Street(int x1, int z1, int width, int length)
 	float v[4] = {
 			0.0, 0.0, length*2, length*2
 	};
-	int ids[4] = {
+	int ids[] = {
+			0,3,2,1,
+			0,3,2,1,
 			0,3,2,1
 	};
-	UVcounts.append(4);
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 3; ++i)
+		UVcounts.append(4);
+	for (int i = 0; i < 12; ++i)
 		UVids.append(ids[i]);
 	for (int i = 0; i < 4; ++i)
 		uArray.append(u[i]);
@@ -37,4 +71,61 @@ Street::Street(int x1, int z1, int width, int length)
 
 Street::~Street()
 {
+}
+
+void Street::addBuildingAlongAbsolute(MFloatPoint from, MFloatPoint to) {
+	buildingsAlong.push_back(from);
+	buildingsAlong.push_back(to);
+}
+
+//void Street::addBuildingAlongRelative(float from, float to, bool left) {
+//	MFloatPoint rel = left ? vert[0] : vert[2];
+//	float wsp = left ? 1.0 : -1.0;
+//	buildingsAlong.push_back(MFloatPoint(rel.x + from*wsp, rel.y, rel.z));
+//	buildingsAlong.push_back(MFloatPoint(rel.x + to*wsp, rel.y, rel.z));
+//}
+
+void Street::addBuildingAlongRelative(float from, float to, bool left){//(const MFloatPoint& v1, const MFloatPoint& v2, Building* b, std::vector<Building*>& vec, const MFloatPoint& curr) {
+	MFloatPoint v1 = left ? vert[0] : vert[2];
+	MFloatPoint v2 = left ? vert[1] : vert[3];
+	double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
+	float wsp;
+	if (asin((v1.z - v2.z) / sqrt(pow(v1.z - v2.z, 2) + pow(v1.x - v2.x, 2))) == 0)
+		wsp = acos((v1.x - v2.x) / sqrt(pow(v1.z - v2.z, 2) + pow(v1.x - v2.x, 2))) > 0 ? 1.0 : -1.0;
+	else
+		wsp = -1;
+	buildingsAlong.push_back(MFloatPoint( wsp * from * cos(alfa1) + v1.x, 0, wsp * from * sin(alfa1) + v1.z));
+	buildingsAlong.push_back(MFloatPoint( wsp * to * cos(alfa1) + v1.x, 0, wsp * to * sin(alfa1) + v1.z));
+}
+
+void Street::addBuildingAlongAllStreet() {
+	buildingsAlong.push_back(vert[0]);
+	buildingsAlong.push_back(vert[1]);
+	buildingsAlong.push_back(vert[2]);
+	buildingsAlong.push_back(vert[3]);
+}
+
+std::vector<MFloatPoint> Street::getBuildingsAlong() {
+	return buildingsAlong;
+}
+
+BuildingType Street::getNeighbourhood() {
+	return neighbourhood;
+}
+
+void Street::setNeighbourhood(BuildingType bType) {
+	this->neighbourhood = bType;
+}
+
+void Street::assignTexture(Texture walkPaths, Texture road) {
+	textures.push_back(walkPaths);
+	textures.push_back(road);
+}
+
+void Street::setParkOnLeft() {
+	parkOnLeft = true;
+}
+
+bool Street::isParkOnLeft() {
+	return parkOnLeft;
 }
