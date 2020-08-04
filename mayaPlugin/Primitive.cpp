@@ -334,6 +334,11 @@ bool Primitive::hasOneTextureOnWhole() {
 	return oneTextureOnWhole;
 }
 void Primitive::assignTexture(Texture tex) {
+	if (tex.getHeight() > 0 && tex.getWidth() > 0) {
+		scaleXTexture(tex.getWidth());
+		scaleZTexture(tex.getWidth());
+		scaleYTexture(tex.getHeight());
+	}
 	textures.push_back(tex);
 }
 

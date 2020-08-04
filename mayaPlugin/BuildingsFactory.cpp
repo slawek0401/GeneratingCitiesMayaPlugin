@@ -35,8 +35,8 @@ Building* BuildingsFactory::createHouse(TextureFactory texFactory) {
 	Building* b = new Building();
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::dom_jednorodzinny);
+	prim->setNewHeight(rand.getLinearValue(1, 2));
 	prim->assignTexture(wallTexture);
-	prim->setNewHeight(rand.getLinearValue(1,2));
 	b->addMainPrimitive(prim);
 	Primitive* roof;
 	if (rand.getLinearValue(0, 1) == 0) {
@@ -56,12 +56,12 @@ Building* BuildingsFactory::createSkyscraper(TextureFactory texFactory) {
 	Building* b = new Building();
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::wiezowiec);
-	prim->assignTexture(wallTexture);
 	setRandomHeight(prim, 1.4);
+	prim->assignTexture(wallTexture);
 	b->addMainPrimitive(prim);
 	static RandomFactory rand;
 	if (rand.getLinearValue(0, 100) < 5) {
-		Primitive* roof = new Pyramid(0, b->getHeight(), 0);
+		Primitive* roof = new Pyramid(0, 2 * b->getHeight(), 0); // times 2 because 2 lines later there is 0.5 scale
 		roof->assignTexture(texFactory.getRandomTextureByType(dach));
 		roof->scale(0.5);
 		b->addPrimitive(roof);
@@ -74,8 +74,8 @@ Building* BuildingsFactory::createTenement(TextureFactory texFactory) {
 	Building* b = new Building();
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::kamienica);
-	prim->assignTexture(wallTexture);
 	setRandomHeight(prim, 0.8);
+	prim->assignTexture(wallTexture);
 	b->addMainPrimitive(prim);
 	static RandomFactory rand;
 	Primitive* roof = new TriangularPrism(0, 0, 0);
@@ -91,8 +91,8 @@ Building* BuildingsFactory::createBlock(TextureFactory texFactory) {
 	Building* b = new Building();
 	Primitive* prim = new Cuboid(0, 0);
 	Texture wallTexture = texFactory.getRandomWallTextureWithSpecifiedType(BuildingType::blok);
-	prim->assignTexture(wallTexture);
 	setRandomHeight(prim, 1);
+	prim->assignTexture(wallTexture);	
 	b->addMainPrimitive(prim);
 	setRandomWidth(b);
 	return b;
