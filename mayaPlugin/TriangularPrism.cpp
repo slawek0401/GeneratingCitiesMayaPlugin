@@ -88,6 +88,26 @@ TriangularPrism::~TriangularPrism()
 }
 
 void TriangularPrism::assignTexture(Texture walls, Texture roof) {
+	if (walls.getHeight() > 0 && walls.getWidth() > 0) 
+		scaleWallsTexture(walls);
 	textures.push_back(walls);
 	textures.push_back(roof);
+}
+
+void TriangularPrism::scaleWallsTexture(Texture walls) {
+	for (int i = 4; i < 7; ++i) {
+		float newVal = round(uArray[i] * walls.getWidth());
+		if (newVal == 0)
+			newVal = 1;
+		if (uArray[i] > 0)
+			replace(i, newVal, uArray);
+	}
+
+	for (int i = 4; i < 7; ++i) {
+		float newVal = round(vArray[i] * walls.getHeight());
+		if (newVal == 0)
+			newVal = 1;
+		if (vArray[i] > 0)
+			replace(i, newVal, vArray);
+	}
 }

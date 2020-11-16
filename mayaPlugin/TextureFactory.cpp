@@ -24,11 +24,13 @@ void TextureFactory::load() {
 		"kamienica",
 		"wiezowiec",
 		"trawa",
-		"asfalt"
+		"asfalt",
+		"okno",
+		"metal"
 	};
-	unsigned counts[] = {4,4,10,3,3,6,9,3,2};
-	TextureType textureTypes[] = { sciana, chodnik, dach, sciana, jezdnia, sciana, sciana, trawa, asfalt };
-	BuildingType buildingTypes[] = {blok, undefined, undefined, dom_jednorodzinny, undefined, kamienica, wiezowiec, undefined, undefined };
+	unsigned counts[] = {4,4,10,6,3,6,9,3,2,1,1};
+	TextureType textureTypes[] = { sciana, chodnik, dach, sciana, jezdnia, sciana, sciana, trawa, asfalt, okno, metal };
+	BuildingType buildingTypes[] = {blok, undefined, undefined, dom_jednorodzinny, undefined, kamienica, wiezowiec, undefined, undefined, undefined, undefined };
 	std::string nameBase = "tex"; 
 	std::string direcotry = "C:\\Users\\Slawek\\Documents\\git_repo\\GeneratingCitiesMayaPlugin\\x64\\Debug\\"; // this source path has to be eventually passed by user, it points to texture directories
 		for (int i = 0; i < sizeof counts / sizeof counts[0]; ++i) { //9
@@ -43,7 +45,7 @@ void TextureFactory::load() {
 					file >> width >> height;
 					ignoreOneCharacter(file);
 					MGlobal::displayInfo(MString((name + " " + std::to_string(width) + " " + std::to_string(height)).data()));
-					Texture tex(folders[i] + "\\\\" + name, textureTypes[i], buildingTypes[i], width, height);
+					Texture tex(folders[i] + "\\\\" + name, textureTypes[i], buildingTypes[i], 1/width, 1/height);
 					availableTextures.push_back(tex);
 					
 				}

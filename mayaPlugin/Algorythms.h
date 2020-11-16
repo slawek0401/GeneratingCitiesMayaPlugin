@@ -8,6 +8,7 @@
 #include "TextureFactory.h"
 #include "BuildingsFactory.h"
 #include "Plane.h"
+#include "Lamp.h"
 
 std::vector<Building*> generateManhatanStyle(int n, int m);
 std::vector<Building*> generateParisStyle(int circles);
@@ -22,8 +23,10 @@ MFloatPoint alignAndAdd(const MFloatPoint& v1, const MFloatPoint& v2, Building* 
 bool turningNeeded(MFloatPoint x, MFloatPoint y, MFloatPoint v, MFloatPoint w);
 BuildingType getBuildingTypeByDistanceFromCentre(int cityWidth, int cityLength, int x, int y);
 void addParkPoints(std::vector<std::vector<int>> &parkPoints, int x, int y, int vertStreetLength, int vertStreetWidth, int horStreetLength, int horStreetWidth);
+Primitive* createLamp(TextureFactory texFactory, double x, double y, MFloatPoint v1, MFloatPoint v2, double rotation);
 
 //streets
 std::vector<Street*> getStreetSystem();
 std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength);
 std::vector<Primitive*> getAdditives(std::vector<Street*> streets, TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength);
+void addLamp(TextureFactory texFactory, Street* str, std::vector<Primitive*>& res);

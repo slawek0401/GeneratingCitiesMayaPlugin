@@ -14,6 +14,7 @@ private:
 	static Building* setRandomHeight(Building* building);
 	static Primitive* setRandomHeight(Primitive* prim, double ratio);
 	static Building* setRandomWidth(Building* building);
+	static void addWindow(TextureFactory texFactory, Building* b, double scaleX, double scaleY, double scaleZ, double moveX, double moveY, double moveZ);
 
 public:
 	BuildingsFactory();

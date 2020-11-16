@@ -169,6 +169,7 @@
     <ClInclude Include="Building.h" />
     <ClInclude Include="BuildingsFactory.h" />
     <ClInclude Include="Cuboid.h" />
+    <ClInclude Include="Lamp.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Primitive.h" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Street.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureFactory.h" />
+    <ClInclude Include="TrafficLights.h" />
     <ClInclude Include="TriangularPrism.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +187,7 @@
     <ClCompile Include="BuildingsFactory.cpp" />
     <ClCompile Include="buildingType.h" />
     <ClCompile Include="Cuboid.cpp" />
+    <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="mayaPlugin.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -200,6 +203,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureFactory.cpp" />
     <ClCompile Include="textureType.h" />
+    <ClCompile Include="TrafficLights.cpp" />
     <ClCompile Include="TriangularPrism.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

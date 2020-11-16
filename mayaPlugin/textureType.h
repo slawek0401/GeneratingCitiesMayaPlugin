@@ -4,5 +4,7 @@ enum TextureType {
 	dach,
 	sciana,
 	trawa,
-	asfalt
+	asfalt,
+	okno,
+	metal
 };

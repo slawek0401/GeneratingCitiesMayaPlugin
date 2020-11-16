@@ -162,15 +162,39 @@ std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory, int city
 std::vector<Primitive*> getAdditives(std::vector<Street*> streets, TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength) {
 	std::vector<Primitive*> res;
 	for (auto str : streets) {
+		int x = str->getVert()[0].x;
+		int y = str->getVert()[0].z;
 		if (str->isParkOnLeft()) {
-			int x = str->getVert()[0].x;
-			int y = str->getVert()[0].z;
 			Primitive* prim = new Plane(x + vertStreetWidth, y, horStreetLength, vertStreetLength);
 			prim->assignTexture(texFactory.getRandomTextureByType(TextureType::trawa));
 			res.push_back(prim);
 		}
+		if (str->getBuildingsAlong().size()>0)
+			addLamp(texFactory, str, res);
 	}
 	return res;
+}
+
+void addLamp(TextureFactory texFactory, Street* str, std::vector<Primitive*>& res) {
+	MFloatPoint v1 = str->getVert()[0];
+	MFloatPoint v2 = str->getVert()[1];
+	double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
+	double alfa2 = atan(-INFINITY);
+	double rotation = (alfa1 - alfa2) * 180 / M_PI;
+	for (int i = 0; i < str->getLength(); ++i) {
+		res.push_back(createLamp(texFactory, str->getWalkPathFrac() * str->getWidth(), i, v1, v2, rotation));
+		res.push_back(createLamp(texFactory, (1 - str->getWalkPathFrac()) * str->getWidth(), i, v1, v2, rotation));
+	}	
+}
+
+Primitive* createLamp(TextureFactory texFactory, double x, double y, MFloatPoint v1, MFloatPoint v2, double rotation) {
+	Primitive* lamp = new Lamp(x, y);
+	lamp->assignTexture(texFactory.getRandomTextureByType(TextureType::metal));
+	lamp->rotateY(rotation);
+	if (turningNeeded(v1, v2, MFloatPoint(0, 0, 0), MFloatPoint(0, 0, 1)))
+		lamp->rotateY(180);
+	lamp->move(v1.x, v1.y, v1.z);
+	return lamp;
 }
 
 bool isBetween(MFloatPoint a, MFloatPoint x1, MFloatPoint x2) {

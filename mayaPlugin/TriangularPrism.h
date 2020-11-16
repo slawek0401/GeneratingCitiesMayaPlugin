@@ -8,5 +8,6 @@ public:
 	~TriangularPrism();
 
 	void assignTexture(Texture walls, Texture roof);
+	void scaleWallsTexture(Texture walls);
 };
 

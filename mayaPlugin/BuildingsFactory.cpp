@@ -30,6 +30,15 @@ Building* BuildingsFactory::createSpecifiedTypeBuilding(BuildingType type, Textu
 	}
 }
 
+void BuildingsFactory::addWindow(TextureFactory texFactory, Building* b, double scaleX, double scaleY, double scaleZ, double moveX, double moveY, double moveZ) {
+	Primitive* window = new Cuboid(0, 0);
+	window->scale(scaleX, scaleY, scaleZ);
+	window->move(moveX, moveY, moveZ);
+	auto windowTexture = texFactory.getRandomTextureByType(TextureType::okno);
+	window->assignTexture(windowTexture);
+	b->addPrimitive(window);
+}
+
 Building* BuildingsFactory::createHouse(TextureFactory texFactory) {
 	static RandomFactory rand;
 	Building* b = new Building();
@@ -39,16 +48,44 @@ Building* BuildingsFactory::createHouse(TextureFactory texFactory) {
 	prim->assignTexture(wallTexture);
 	b->addMainPrimitive(prim);
 	Primitive* roof;
+	double buildingHeight = b->getHeight();
 	if (rand.getLinearValue(0, 1) == 0) {
-		roof = new Pyramid(0, b->getHeight(), 0);
+		roof = new Pyramid(0, buildingHeight, 0);
 		roof->assignTexture(texFactory.getRandomTextureByType(dach));
 	}
 	else {
-		roof = new TriangularPrism(0, b->getHeight(), 0);
+		roof = new TriangularPrism(0, buildingHeight, 0);
 		((TriangularPrism*)roof)->assignTexture(wallTexture, texFactory.getRandomTextureByType(dach));
 	}
 	b->addPrimitive(roof);
 	setRandomWidth(b);
+	for (int i = 0; i < buildingHeight; ++i) {
+		for (int j = 0; j < (int)b->frontWidth(); ++j) {
+			addWindow(texFactory, b, 0.4, 0.15, 0.0001, //front
+				(double)j + 0.45 - b->frontWidth() / 2 + (b->frontWidth() - floor(b->frontWidth())) / (floor(b->frontWidth() + 1)), //move x
+				(double)i + 0.2, //move y
+				-1.001 //move z
+				);
+			addWindow(texFactory, b, 0.4, 0.15, 0.0001, //rear
+				(double)j + 0.45 - b->frontWidth() / 2 + (b->frontWidth() - floor(b->frontWidth())) / (floor(b->frontWidth() + 1)), //move x
+				(double)i + 0.2, //move y
+				1.001 //move z
+				);
+		}
+
+		for (int j = 0; j < 2; ++j) {
+			addWindow(texFactory, b, 0.0001, 0.15, 0.4, //left
+				-(b->frontWidth() / 2 + 0.001), //move x
+				(double)i + 0.2, //move y
+				(double)j + 0.45 - 1  //move z
+				);
+			addWindow(texFactory, b, 0.0001, 0.15, 0.4, //right
+				b->frontWidth() / 2 + 0.001, //move x
+				(double)i + 0.2, //move y
+				(double)j + 0.45 - 1  //move z
+				);
+		}
+	}
 	return b;
 }
 
