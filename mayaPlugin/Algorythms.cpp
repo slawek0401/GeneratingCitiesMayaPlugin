@@ -122,7 +122,7 @@ std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory, int city
 	for (int i = x1; i < cityWidth / 2; i += horStreetLength + vertStreetWidth) {
 		for (int j = y1; j < cityLength / 2; j += vertStreetLength + horStreetWidth) {
 			if (j + vertStreetLength < cityLength / 2) {// nie tworz ulicy po ostatnim skrzyzowaniu
-				auto str = new Street(getBuildingTypeByDistanceFromCentre(cityWidth, cityLength, i, j), 0.15, 0, 0, vertStreetWidth, vertStreetLength);
+				auto str = new Street(getBuildingTypeByDistanceFromCentre(cityWidth, cityLength, i, j), 0.15, 0, 0, (double)vertStreetWidth, (double)vertStreetLength);
 				str->move(i, 0, j);
 				if (rand.getLinearValue(0,100)<8 && ((i + horStreetLength + vertStreetWidth < cityLength / 2))) {//stworz park
 					str->setParkOnLeft();
@@ -169,10 +169,39 @@ std::vector<Primitive*> getAdditives(std::vector<Street*> streets, TextureFactor
 			prim->assignTexture(texFactory.getRandomTextureByType(TextureType::trawa));
 			res.push_back(prim);
 		}
-		if (str->getBuildingsAlong().size()>0)
+		if (str->getBuildingsAlong().size() > 0) {
 			addLamp(texFactory, str, res);
+			addTrafficLight(texFactory, str, res);
+		}
 	}
 	return res;
+}
+
+void addTrafficLight(TextureFactory texFactory, Street* str, std::vector<Primitive*>& res) {
+	MFloatPoint v1 = str->getVert()[0];
+	MFloatPoint v2 = str->getVert()[1];
+	double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
+	double alfa2 = atan(-INFINITY);
+	double rotation = (alfa1 - alfa2) * 180 / M_PI;
+	double x = str->getWalkPathFrac() * str->getWidth();
+	double y = str->getLength();
+	double x1 = -(1 - str->getWalkPathFrac()) * str->getWidth();
+	double y1 = 0;
+	Primitive* trafficLight = new TrafficLights(x, y);
+	Primitive* trafficLight1 = new TrafficLights(x1, y1);
+	trafficLight1->rotateY(180);
+	trafficLight->assignTexture(texFactory.getRandomTextureByType(TextureType::metal));
+	trafficLight1->assignTexture(texFactory.getRandomTextureByType(TextureType::metal));
+	trafficLight->rotateY(rotation);
+	trafficLight1->rotateY(rotation);
+	if (turningNeeded(v1, v2, MFloatPoint(0, 0, 0), MFloatPoint(0, 0, 1))) {
+		trafficLight->rotateY(180);
+		trafficLight1->rotateY(180);
+	}
+	trafficLight->move(v1.x, v1.y, v1.z);
+	trafficLight1->move(v1.x, v1.y, v1.z);
+	res.push_back(trafficLight);
+	res.push_back(trafficLight1);
 }
 
 void addLamp(TextureFactory texFactory, Street* str, std::vector<Primitive*>& res) {
@@ -181,14 +210,17 @@ void addLamp(TextureFactory texFactory, Street* str, std::vector<Primitive*>& re
 	double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
 	double alfa2 = atan(-INFINITY);
 	double rotation = (alfa1 - alfa2) * 180 / M_PI;
-	for (int i = 0; i < str->getLength(); ++i) {
-		res.push_back(createLamp(texFactory, str->getWalkPathFrac() * str->getWidth(), i, v1, v2, rotation));
-		res.push_back(createLamp(texFactory, (1 - str->getWalkPathFrac()) * str->getWidth(), i, v1, v2, rotation));
+	for (int i = 0; i <= str->getLength(); ++i) {
+		if (i != str->getLength())
+			res.push_back(createLamp(texFactory, str->getWalkPathFrac() * str->getWidth(), i, v1, v2, rotation));
+		if (i != 0)
+			res.push_back(createLamp(texFactory, (1 - str->getWalkPathFrac()) * str->getWidth(), i, v1, v2, rotation));
 	}	
 }
 
 Primitive* createLamp(TextureFactory texFactory, double x, double y, MFloatPoint v1, MFloatPoint v2, double rotation) {
 	Primitive* lamp = new Lamp(x, y);
+	//Primitive* lamp = new TrafficLights(x, y);
 	lamp->assignTexture(texFactory.getRandomTextureByType(TextureType::metal));
 	lamp->rotateY(rotation);
 	if (turningNeeded(v1, v2, MFloatPoint(0, 0, 0), MFloatPoint(0, 0, 1)))
@@ -260,4 +292,16 @@ MFloatPoint alignAndAdd(const MFloatPoint& v1, const MFloatPoint& v2, Building* 
 	b->move(curr.x - b->front[0].x, curr.y - b->front[0].y, curr.z - b->front[0].z);
 	vec.push_back(b);
 	return b->front[1];
+}
+
+std::vector<unsigned> range(unsigned count) {
+	std::vector<unsigned> res;
+	for (unsigned i = 0; i < count; ++i)
+		res.push_back(i);
+	return res;
+}
+
+std::vector<unsigned> randRange(unsigned count) {
+	static RandomFactory randomFactory;
+	return randomFactory.shuffle<unsigned>(range(count));
 }

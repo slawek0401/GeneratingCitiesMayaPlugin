@@ -25,6 +25,11 @@ Plane::Plane(int x1, int z1, int width, int length)
 	polConnects.append(3);
 
 	oneTextureOnWhole = true;
+	
+	xTexCoordsIndexFrom = 0;
+	xTexCoordsIndexTo = 4;
+	zTexCoordsIndexFrom = 0;
+	zTexCoordsIndexTo = 4;
 
 	float u[4] = {
 			0.0, width * 2, width * 2, 0.0

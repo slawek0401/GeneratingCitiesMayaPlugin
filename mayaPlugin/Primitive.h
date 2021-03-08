@@ -21,6 +21,8 @@ protected:
 	std::vector<std::vector<int>> texOnFaceIndexes;
 	std::string nameInMaya;
 
+	void addCircle(MFloatPoint middle, double radius, unsigned segments = 32);
+
 public:
 	MFloatPointArray vert;
 	MIntArray polCounts;
@@ -40,6 +42,7 @@ public:
 	void scale(double scaleX, double scaleY, double scaleZ);
 	void scale(double scale);
 	void rotateY(double degrees);
+	void rotateX(double degrees);
 	MFloatPointArray getVert();
 	MIntArray getpolCounts();
 	MIntArray getpolConnects();

@@ -36,7 +36,7 @@ void TextureFactory::load() {
 		for (int i = 0; i < sizeof counts / sizeof counts[0]; ++i) { //9
 			std::ifstream file;
 			file.open(direcotry + folders[i] + "\\config.txt");
-			MGlobal::displayInfo(MString((folders[i] + "\\config.txt").data()));
+			//MGlobal::displayInfo(MString((folders[i] + "\\config.txt").data()));
 			if (file.is_open()) {
 				
 				for (int j = 1; j <= counts[i]; ++j) {
@@ -44,7 +44,7 @@ void TextureFactory::load() {
 					auto name = getName(file);
 					file >> width >> height;
 					ignoreOneCharacter(file);
-					MGlobal::displayInfo(MString((name + " " + std::to_string(width) + " " + std::to_string(height)).data()));
+					//MGlobal::displayInfo(MString((name + " " + std::to_string(width) + " " + std::to_string(height)).data()));
 					Texture tex(folders[i] + "\\\\" + name, textureTypes[i], buildingTypes[i], 1/width, 1/height);
 					availableTextures.push_back(tex);
 					

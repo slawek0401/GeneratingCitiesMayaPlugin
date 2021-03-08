@@ -12,11 +12,11 @@ class Street : public Primitive
 	std::vector<MFloatPoint> buildingsAlong;
 	BuildingType neighbourhood;
 	bool parkOnLeft = false;
-	int width, length;
+	double width, length;
 	double walkPathFrac;
 
 public:
-	Street(BuildingType neighbourhood, double walkPathFrac, int x1 = 0, int z1 = 0, int width = 2, int length = 2);
+	Street(BuildingType neighbourhood, double walkPathFrac = 0.15, double x1=0.0, double z1=0.0, double width=2.0, double length=2.0);
 	~Street();
 
 	void addBuildingAlongAbsolute(MFloatPoint from, MFloatPoint to);
@@ -28,8 +28,8 @@ public:
 	void assignTexture(Texture walkPaths, Texture road);
 	void setParkOnLeft();
 	bool isParkOnLeft();
-	int getWidth();
-	int getLength();
+	double getWidth();
+	double getLength();
 	double getWalkPathFrac();
 };
 

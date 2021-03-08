@@ -172,9 +172,12 @@
     <ClInclude Include="Lamp.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="PointBasedAlgorythmGenerator.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Pyramid.h" />
     <ClInclude Include="RandomFactory.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Street.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureFactory.h" />
@@ -196,6 +199,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="PointBasedAlgorythmGenerator.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="RandomFactory.cpp" />

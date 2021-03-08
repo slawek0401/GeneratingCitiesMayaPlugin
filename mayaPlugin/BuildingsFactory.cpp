@@ -30,10 +30,14 @@ Building* BuildingsFactory::createSpecifiedTypeBuilding(BuildingType type, Textu
 	}
 }
 
-void BuildingsFactory::addWindow(TextureFactory texFactory, Building* b, double scaleX, double scaleY, double scaleZ, double moveX, double moveY, double moveZ) {
-	Primitive* window = new Cuboid(0, 0);
+void BuildingsFactory::addWindow(TextureFactory texFactory, Building* b, double scaleX, double scaleY, double scaleZ, double moveX, double moveY, double moveZ, double rotateY) {
+	Primitive* window = new Plane(-1, 0, 2, 5);
+	window->rotateX(-90);
+	window->rotateY(rotateY);
 	window->scale(scaleX, scaleY, scaleZ);
 	window->move(moveX, moveY, moveZ);
+	window->scaleYTexture(0.5);
+	window->scaleXTexture(0.25);
 	auto windowTexture = texFactory.getRandomTextureByType(TextureType::okno);
 	window->assignTexture(windowTexture);
 	b->addPrimitive(window);
@@ -69,21 +73,21 @@ Building* BuildingsFactory::createHouse(TextureFactory texFactory) {
 			addWindow(texFactory, b, 0.4, 0.15, 0.0001, //rear
 				(double)j + 0.45 - b->frontWidth() / 2 + (b->frontWidth() - floor(b->frontWidth())) / (floor(b->frontWidth() + 1)), //move x
 				(double)i + 0.2, //move y
-				1.001 //move z
-				);
+				1.001, //move z
+				180);
 		}
 
 		for (int j = 0; j < 2; ++j) {
 			addWindow(texFactory, b, 0.0001, 0.15, 0.4, //left
 				-(b->frontWidth() / 2 + 0.001), //move x
 				(double)i + 0.2, //move y
-				(double)j + 0.45 - 1  //move z
-				);
+				(double)j + 0.45 - 1,  //move z
+				-90);
 			addWindow(texFactory, b, 0.0001, 0.15, 0.4, //right
 				b->frontWidth() / 2 + 0.001, //move x
 				(double)i + 0.2, //move y
-				(double)j + 0.45 - 1  //move z
-				);
+				(double)j + 0.45 - 1,  //move z
+				90);
 		}
 	}
 	return b;

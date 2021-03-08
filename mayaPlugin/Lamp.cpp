@@ -202,33 +202,50 @@ SIATKA UV
 	polConnects.append(31);
 
 	oneTextureOnWhole = true;
-	float u[8] = {
-			0.0, 2.0, 2.0, 0.0,
-			0.0, 2.0, 2.0, 0.0
+	float u[] = {
+			0.0, 0.0, 1.0, 1.0,
+			1.0, 6.0, 6.0, 0.5, -5.0, -5.0, 0.0, 0.0, 1.0
 	};
-	float v[8] = {
-			0.0, 0.0, 7.0, 7.0,
-			0.0, 0.0, 7.0, 7.0
+	float v[] = {
+			0.0, 1.0, 1.0, 0.0,
+			10.0, 11.0, 13.0, 12.0, 13.0, 11.0, 10.0, 0.0, 0.0
 	};
-	int ids[24] = {
-			2,3,0,1,//front
-			2,3,0,1,//back
-			0,0,0,0,//top
-			6,7,4,5,//left
-			0,0,0,0,//bottom
-			6,7,4,5//right
+	int ids[] = {
+			4,5,6,7,8,9,10,11,12,
+			4,5,6,7,8,9,10,11,12,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3
 	};
 	xTexCoordsIndexFrom = 0;
 	xTexCoordsIndexTo = 4;
-	zTexCoordsIndexFrom = 4;
-	zTexCoordsIndexTo = 8;
-	for (int i = 0; i < 6; ++i)
+	zTexCoordsIndexFrom = 0;
+	zTexCoordsIndexTo = 4;
+	for (int i = 0; i < 2; ++i)
+		UVcounts.append(9);
+	for (int i = 0; i < 19; ++i)
 		UVcounts.append(4);
-	for (int i = 0; i < 6 * 4; ++i)
+	for (int i = 0; i < 19 * 4 + 2 * 9; ++i)
 		UVids.append(ids[i]);
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 13; ++i)
 		uArray.append(u[i]);
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 13; ++i)
 		vArray.append(v[i]);
 }
 

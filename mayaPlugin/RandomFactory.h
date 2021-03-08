@@ -15,5 +15,11 @@ public:
 	double getLogNormalValue(double mi=0, double sigma=0.25);
 	double getNormalValue(double mi = 6, double sigma = 4);
 	int getLinearValue(int from, int to);
+
+	template<typename T> std::vector<T> shuffle(std::vector<T> vector) {
+		std::random_shuffle(vector.begin(), vector.end());
+		return vector;
+	}
+	
 };
 

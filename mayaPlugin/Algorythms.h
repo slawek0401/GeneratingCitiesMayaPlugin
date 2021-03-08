@@ -9,6 +9,7 @@
 #include "BuildingsFactory.h"
 #include "Plane.h"
 #include "Lamp.h"
+#include "TrafficLights.h"
 
 std::vector<Building*> generateManhatanStyle(int n, int m);
 std::vector<Building*> generateParisStyle(int circles);
@@ -30,3 +31,8 @@ std::vector<Street*> getStreetSystem();
 std::vector<Street*> getManhatanStreetSystem(TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength);
 std::vector<Primitive*> getAdditives(std::vector<Street*> streets, TextureFactory texFactory, int cityWidth, int cityLength, int vertStreetWidth, int vertStreetLength, int horStreetWidth, int horStreetLength);
 void addLamp(TextureFactory texFactory, Street* str, std::vector<Primitive*>& res);
+void addTrafficLight(TextureFactory texFactory, Street* str, std::vector<Primitive*>& res);
+
+//basic
+std::vector<unsigned> range(unsigned count);
+std::vector<unsigned> randRange(unsigned count);

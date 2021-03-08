@@ -2,7 +2,7 @@
 
 
 
-Street::Street(BuildingType bType, double walkPathFrac, int x1, int z1, int width, int length)
+Street::Street(BuildingType bType, double walkPathFrac, double x1, double z1, double width, double length)
 {
 	this->neighbourhood = bType;
 	this->width = width;
@@ -133,11 +133,11 @@ bool Street::isParkOnLeft() {
 	return parkOnLeft;
 }
 
-int Street::getWidth() {
+double Street::getWidth() {
 	return width;
 }
 
-int Street::getLength() {
+double Street::getLength() {
 	return length;
 }
 

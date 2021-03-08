@@ -281,6 +281,17 @@ void Primitive::rotateY(double degrees) {
 		vert[i].z = sin(degInRad) * oldX + cos(degInRad) * oldZ;
 	}
 }
+
+void Primitive::rotateX(double degrees) {
+	double degInRad = degrees * M_PI / 180;
+	for (int i = 0; i < vert.length(); ++i) {
+		auto oldY = vert[i].y;
+		auto oldZ = vert[i].z;
+		vert[i].y = cos(degInRad) * oldY - sin(degInRad) * oldZ;
+		vert[i].z = sin(degInRad) * oldY + cos(degInRad) * oldZ;
+	}
+}
+
 MFloatPointArray Primitive::getVert() {
 	return vert;
 }
@@ -356,4 +367,21 @@ void Primitive::setNameInMaya(std::string name) {
 
 std::string Primitive::getNameInMaya() {
 	return nameInMaya;
+}
+
+void Primitive::addCircle(MFloatPoint middle, double radius, unsigned segments) {
+	double degInRad = 360 * M_PI / 180 / segments;
+	MFloatPoint point(radius, 0, 0);
+	for (int i = 0; i < segments; ++i) {
+		auto oldX = point.x;
+		auto oldY = point.y;
+		point.x = cos(i * degInRad) * oldX - sin(i * degInRad) * oldY;
+		point.y = sin(i * degInRad) * oldX + cos(i * degInRad) * oldY;
+		vert.append(MFloatPoint(point.x + middle.x, point.y + middle.y, point.z + middle.z));
+	}
+	
+	polCounts.append(segments);
+	for (int i = 0; i < segments; ++i) {
+		polConnects.append(vert.length() - segments - 1 + i);
+	}
 }

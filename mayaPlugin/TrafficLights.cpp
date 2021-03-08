@@ -20,15 +20,15 @@ TrafficLights::TrafficLights(double moveX, double moveZ) {
 	vert.append(MFloatPoint(0.5 + moveX, 1.01, 0.01 + moveZ)); //14
 	vert.append(MFloatPoint(0.5 + moveX, 1.01, -0.01 + moveZ)); //15
 
-	vert.append(MFloatPoint(0.55 + moveX, 0.9, 0.02 + moveZ)); //16
-	vert.append(MFloatPoint(0.45 + moveX, 0.9, 0.02 + moveZ)); //17
-	vert.append(MFloatPoint(0.48 + moveX, 0.95, 0.01 + moveZ)); //18
-	vert.append(MFloatPoint(0.52 + moveX, 0.95, 0.01 + moveZ)); //19
+	vert.append(MFloatPoint(0.55 + moveX, 0.9, -0.02 + moveZ)); //16
+	vert.append(MFloatPoint(0.45 + moveX, 0.9, -0.02 + moveZ)); //17
+	vert.append(MFloatPoint(0.48 + moveX, 0.95, -0.01 + moveZ)); //18
+	vert.append(MFloatPoint(0.52 + moveX, 0.95, -0.01 + moveZ)); //19
 
-	vert.append(MFloatPoint(0.55 + moveX, 1.1, 0.02 + moveZ)); //20
-	vert.append(MFloatPoint(0.45 + moveX, 1.1, 0.02 + moveZ)); //21
-	vert.append(MFloatPoint(0.48 + moveX, 1.05, 0.01 + moveZ)); //22
-	vert.append(MFloatPoint(0.52 + moveX, 1.05, 0.01 + moveZ)); //23
+	vert.append(MFloatPoint(0.55 + moveX, 1.1, -0.02 + moveZ)); //20
+	vert.append(MFloatPoint(0.45 + moveX, 1.1, -0.02 + moveZ)); //21
+	vert.append(MFloatPoint(0.48 + moveX, 1.05, -0.01 + moveZ)); //22
+	vert.append(MFloatPoint(0.52 + moveX, 1.05, -0.01 + moveZ)); //23
 
 
 	for (int i = 0; i < 18; ++i)
@@ -94,64 +94,74 @@ TrafficLights::TrafficLights(double moveX, double moveZ) {
 	polConnects.append(13);
 	polConnects.append(9);
 
-	polConnects.append(17);//sygnalizator przód
+	polConnects.append(21);//sygnalizator przód
+	polConnects.append(20);
 	polConnects.append(16);
-	polConnects.append(20);
-	polConnects.append(21);
-
-	polConnects.append(21); // góra
-	polConnects.append(20);
-	polConnects.append(23);
-	polConnects.append(22);
-
-	polConnects.append(16); //prawa
-	polConnects.append(19);
-	polConnects.append(23);
-	polConnects.append(20);
-
-	polConnects.append(18);//lewa
 	polConnects.append(17);
-	polConnects.append(21);
-	polConnects.append(22);
 
-	polConnects.append(19); //tyl
+	polConnects.append(22); // góra
+	polConnects.append(23);
+	polConnects.append(20);
+	polConnects.append(21);
+
+	polConnects.append(20); //prawa
+	polConnects.append(23);
+	polConnects.append(19);
+	polConnects.append(16);
+
+	polConnects.append(22);//lewa
+	polConnects.append(21);
+	polConnects.append(17);
 	polConnects.append(18);
-	polConnects.append(22);
-	polConnects.append(23);
 
-	polConnects.append(18); //dol
+	polConnects.append(23); //tyl
+	polConnects.append(22);
+	polConnects.append(18);
 	polConnects.append(19);
+
+	polConnects.append(17); //dol
 	polConnects.append(16);
-	polConnects.append(17);
+	polConnects.append(19);
+	polConnects.append(18);
 
 	oneTextureOnWhole = true;
-	float u[8] = {
-			0.0, 2.0, 2.0, 0.0,
-			0.0, 2.0, 2.0, 0.0
+	float u[] = {
+			0.0, 0.0, 1.0, 1.0,
 	};
-	float v[8] = {
-			0.0, 0.0, 7.0, 7.0,
-			0.0, 0.0, 7.0, 7.0
+	float v[] = {
+			0.0, 1.0, 1.0, 0.0,
 	};
-	int ids[24] = {
-			2,3,0,1,//front
-			2,3,0,1,//back
-			0,0,0,0,//top
-			6,7,4,5,//left
-			0,0,0,0,//bottom
-			6,7,4,5//right
+	int ids[] = {
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3,
+			0,1,2,3
 	};
 	xTexCoordsIndexFrom = 0;
 	xTexCoordsIndexTo = 4;
-	zTexCoordsIndexFrom = 4;
-	zTexCoordsIndexTo = 8;
-	for (int i = 0; i < 6; ++i)
+	zTexCoordsIndexFrom = 0;
+	zTexCoordsIndexTo = 4;
+	for (int i = 0; i < 18; ++i)
 		UVcounts.append(4);
-	for (int i = 0; i < 6 * 4; ++i)
+	for (int i = 0; i < 18 * 4; ++i)
 		UVids.append(ids[i]);
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 4; ++i)
 		uArray.append(u[i]);
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 4; ++i)
 		vArray.append(v[i]);
 }
 
