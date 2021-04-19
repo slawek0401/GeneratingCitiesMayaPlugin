@@ -6,6 +6,8 @@
 #include "TextureFactory.h"
 #include "Street.h"
 #include "Algorythms.h"
+#include "Vector3.h"
+#include "Polygon.h"
 
 class PointBasedAlgorythmGenerator
 {
@@ -40,11 +42,12 @@ private:
 	void randomPoints();
 	void randomMinDistPoints(double minDist, unsigned maxMistakes);
 	void findRoadConnections(double minLength=2, double maxLength=10, double streetWidth = 2);
+	void addCrossings();
 	Street* createStreet(Point p, Point q, double streetWidth);
 	std::vector<double> findXLimits(double z);
 	BuildingType getBuildingTypeByDistanceFromCentre(Point p);
 	double countDistance(Point p, Point q);
 	double pow2(double a);
-	
+	static bool comparePointAngle(const Point &a, const Point &b, const Point &middle);
 };
 

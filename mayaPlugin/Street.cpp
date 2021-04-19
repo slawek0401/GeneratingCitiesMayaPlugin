@@ -125,6 +125,10 @@ void Street::assignTexture(Texture walkPaths, Texture road) {
 	textures.push_back(road);
 }
 
+void Street::assignTexture(Texture road) {
+	textures.push_back(road);
+}
+
 void Street::setParkOnLeft() {
 	parkOnLeft = true;
 }

@@ -99,14 +99,56 @@ void PointBasedAlgorythmGenerator::randomMinDistPoints(double minDist, unsigned 
 }
 
 std::vector<Street*> PointBasedAlgorythmGenerator::generate() {
-	randomPoints();
-	//randomMinDistPoints(4, 20);
+	//randomPoints();
+	randomMinDistPoints(4, 20);
 	if (!cityCenterSet)
 		countCityCenter();
 	if (!cityDiagonalSet)
 		countCityDiagonal();
 	findRoadConnections();
+	addCrossings();
 	return streets;
+}
+
+std::pair<Point, Point> countCrossingPoints(Point start, Point end) {
+	Vector3 vec(start, end);
+	vec.setLength(0.5);
+	Vector3 vec2(vec);
+	vec2.setLength(1);
+	Point vecStart = vec2.toPoints(start).second;
+	vec.rotateY(-90);
+	Point a = vec.toPoints(vecStart).second;
+	vec.rotateY(180);
+	Point b = vec.toPoints(vecStart).second;
+	return std::make_pair(a, b);
+}
+
+bool PointBasedAlgorythmGenerator::comparePointAngle(const Point &a, const Point &b, const Point &middle) {
+	Vector3 vec1(middle, a);
+	Vector3 vec2(middle, b);
+	return vec1.angle() > vec2.angle();
+}
+
+void PointBasedAlgorythmGenerator::addCrossings() {
+	for (auto point : roadsPoints) {
+		std::vector<Point> polygonVerts;
+		for (auto connection : roadConnections) {
+			if (connection.first == point) {
+				auto res = countCrossingPoints(connection.first, connection.second);
+				polygonVerts.push_back(res.first);
+				polygonVerts.push_back(res.second);
+			}
+			else if (connection.second == point) {
+				auto res = countCrossingPoints(connection.second, connection.first);
+				polygonVerts.push_back(res.first);
+				polygonVerts.push_back(res.second);
+			}
+		}
+		std::sort(polygonVerts.begin(), polygonVerts.end(), [point](Point a, Point b) {return comparePointAngle(a, b, point); });
+		Street* crossing = new Polygon(polygonVerts);
+		crossing->assignTexture(texFactory.getRandomTextureByType(TextureType::asfalt));
+		streets.push_back(crossing);
+	}
 }
 
 void PointBasedAlgorythmGenerator::findRoadConnections(double minLength, double maxLength, double streetWidth) {
@@ -128,7 +170,8 @@ void PointBasedAlgorythmGenerator::findRoadConnections(double minLength, double 
 
 Street* PointBasedAlgorythmGenerator::createStreet(Point p, Point q, double streetWidth) {
 	Point middlePoint(q.x - p.x, q.z - p.z);
-	Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -0.5, 0, 1, countDistance(p, q));
+	Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -0.5, 1, 1, countDistance(p, q) - 2);//w przeciwienstwie do tego ni¿ej tutaj ulica nie zaczyna siê idealnie w punkcie, jest miejsce na skrzyzowanie
+	//Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -0.5, 0, 1, countDistance(p, q));
 	//Street(BuildingType neighbourhood, double walkPathFrac = 0.15, int x1 = 0, int z1 = 0, int width = 2, int length = 2);
 	double alfa = atan((q.z - p.z) / (q.x - p.x)) - M_PI / 2;
 	double addent = q.x-p.x < 0 ? M_PI : 0;

@@ -9,5 +9,9 @@ public:
 	Point();
 	Point(double x, double y, double z);
 	Point(double x, double z);
+	bool operator==(Point& other);
+	Point operator+=(const  Point& other);
+	Point operator-=(const  Point& other);
+	Point operator/=(double a);
 };
 
