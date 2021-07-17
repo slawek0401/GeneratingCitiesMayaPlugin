@@ -10,6 +10,8 @@
 #include "Plane.h"
 #include "Lamp.h"
 #include "TrafficLights.h"
+#include "Point.h"
+#include "Vector3.h"
 
 std::vector<Building*> generateManhatanStyle(int n, int m);
 std::vector<Building*> generateParisStyle(int circles);
@@ -36,3 +38,11 @@ void addTrafficLight(TextureFactory texFactory, Street* str, std::vector<Primiti
 //basic
 std::vector<unsigned> range(unsigned count);
 std::vector<unsigned> randRange(unsigned count);
+
+//vector 
+bool intersects(std::pair<Point, Point> a, std::pair<Point, Point> b);
+double vectorProduct(Vector3 v, Vector3 u);
+void removeDuplicates(std::vector<size_t>& vec);
+
+//debug
+void showDebug(std::string a);

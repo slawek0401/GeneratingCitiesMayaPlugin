@@ -8,6 +8,7 @@
 #include "Algorythms.h"
 #include "Vector3.h"
 #include "Polygon.h"
+#include "FastNoiseLite.h"
 
 class PointBasedAlgorythmGenerator
 {
@@ -23,6 +24,7 @@ private:
 	bool cityDiagonalSet = false;
 	TextureFactory texFactory;
 	std::vector<std::pair<Point, Point>> roadConnections;
+	double streetWidth = 2;
 	
 
 	// mo¿na losowaæ w zakresie od maksa do minimum góra-dó³, dla wylosowanej liczby szukac na prawo i na lewo najblizszych punktów, wyliczac z liniowej jak ie jest ograniczenie prawo-lewo
@@ -41,13 +43,18 @@ public:
 private:
 	void randomPoints();
 	void randomMinDistPoints(double minDist, unsigned maxMistakes);
-	void findRoadConnections(double minLength=2, double maxLength=10, double streetWidth = 2);
+	void randomFastNoicePoints();
+	void findRoadConnections(double minLength=4, double maxLength=20);
 	void addCrossings();
-	Street* createStreet(Point p, Point q, double streetWidth);
+	Street* createStreet(Point p, Point q, std::vector<double> buildingsAlong);
 	std::vector<double> findXLimits(double z);
 	BuildingType getBuildingTypeByDistanceFromCentre(Point p);
 	double countDistance(Point p, Point q);
 	double pow2(double a);
 	static bool comparePointAngle(const Point &a, const Point &b, const Point &middle);
+	void deleteRoadsIntersections();
+	void deleteSmallAngleRoads();
+	void addStreets();
+	
 };
 

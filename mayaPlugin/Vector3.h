@@ -25,5 +25,7 @@ public:
 	std::pair<Point, Point> toPoints(Point start);
 	std::pair<Point, Point> toPoints(double x, double y, double z);
 	Vector3 operator+(const Vector3& other);
+	static double countSectionLength(Point a, Point b);
+	static double countSectionLength(std::pair<Point, Point> a);
 };
 

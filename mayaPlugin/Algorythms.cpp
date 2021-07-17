@@ -250,7 +250,9 @@ std::vector<Building*> getBuildingsAlongStreets(std::vector<Street*> streets, Te
 void getBuildingsAlongOneSideOfStreet(std::vector<Building*> &vec, MFloatPoint v1, MFloatPoint v2, TextureFactory texFactory, BuildingType bType) {
 	MFloatPoint currentPoint = v1;
 	bool nextBuildingNeeded = true;
-	while (nextBuildingNeeded) {
+	int i = 0;
+	while (nextBuildingNeeded && i < 20) {
+		++i;
 		Building* b = BuildingsFactory::createSpecifiedTypeBuilding(bType, texFactory);
 		if (countSegmentLength(currentPoint, v2) <= countSegmentLength(b->front[0], b->front[1])) {
 			nextBuildingNeeded = false;
@@ -304,4 +306,37 @@ std::vector<unsigned> range(unsigned count) {
 std::vector<unsigned> randRange(unsigned count) {
 	static RandomFactory randomFactory;
 	return randomFactory.shuffle<unsigned>(range(count));
+}
+
+bool intersects(std::pair<Point, Point> a, std::pair<Point, Point> b) {
+	Vector3 v(a.first, a.second);
+	Vector3 u(b.first, b.second);
+
+	Vector3 v1(a.second, b.first);
+	Vector3 v2(a.second, b.second);
+	Vector3 v3(b.second, a.first);
+	Vector3 v4(b.second, a.second);
+
+	double p1 = vectorProduct(v, v1);
+	double p2 = vectorProduct(v, v2);
+	double p3 = vectorProduct(u, v3);
+	double p4 = vectorProduct(u, v4);
+
+	return  (p1 > 0 && p2 < 0 || p1 < 0 && p2>0) && (p3>0 && p4 < 0 || p3 < 0 && p4>0);
+}
+
+double vectorProduct(Vector3 v, Vector3 u) {
+	return u.x * v.z - v.x * u.z;
+}
+
+void removeDuplicates(std::vector<size_t> &vec) {
+	for (auto i = vec.begin() + 1; i != vec.end(); ++i) {
+		if (*i == *(i - 1))
+			vec.erase(i--);
+	}
+}
+
+void showDebug(std::string a) {
+	MString c(a.data());
+	MGlobal::displayInfo(c);
 }

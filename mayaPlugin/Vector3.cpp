@@ -68,3 +68,14 @@ double Vector3::angle() {
 		val += (z < 0 ? -1 : 1) * M_PI;
 	return val;
 }
+
+double Vector3::countSectionLength(Point a, Point b) {
+	double x = b.x - a.x;
+	double y = b.y - a.y;
+	double z = b.z - a.z;
+	return sqrt(x * x + y * y + z * z);
+}
+
+double Vector3::countSectionLength(std::pair<Point, Point> a) {
+	return Vector3::countSectionLength(a.first, a.second);
+}

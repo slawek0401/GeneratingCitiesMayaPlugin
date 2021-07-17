@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Primitive.h"
+#include "Vector3.h"
 
 class Street : public Primitive
 {

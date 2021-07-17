@@ -91,14 +91,28 @@ void Street::addBuildingAlongAbsolute(MFloatPoint from, MFloatPoint to) {
 void Street::addBuildingAlongRelative(float from, float to, bool left){//(const MFloatPoint& v1, const MFloatPoint& v2, Building* b, std::vector<Building*>& vec, const MFloatPoint& curr) {
 	MFloatPoint v1 = left ? vert[0] : vert[2];
 	MFloatPoint v2 = left ? vert[1] : vert[3];
-	double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
-	float wsp;
-	if (asin((v1.z - v2.z) / sqrt(pow(v1.z - v2.z, 2) + pow(v1.x - v2.x, 2))) == 0)
-		wsp = acos((v1.x - v2.x) / sqrt(pow(v1.z - v2.z, 2) + pow(v1.x - v2.x, 2))) > 0 ? 1.0 : -1.0;
-	else
-		wsp = -1;
-	buildingsAlong.push_back(MFloatPoint( wsp * from * cos(alfa1) + v1.x, 0, wsp * from * sin(alfa1) + v1.z));
-	buildingsAlong.push_back(MFloatPoint( wsp * to * cos(alfa1) + v1.x, 0, wsp * to * sin(alfa1) + v1.z));
+	//double alfa1 = atan((v1.z - v2.z) / (v1.x - v2.x));
+	//float wsp;
+	//if (asin((v1.z - v2.z) / sqrt(pow(v1.z - v2.z, 2) + pow(v1.x - v2.x, 2))) == 0)
+	//	wsp = acos((v1.x - v2.x) / sqrt(pow(v1.z - v2.z, 2) + pow(v1.x - v2.x, 2))) > 0 ? 1.0 : -1.0;
+	//else
+	//	wsp = -1;
+	//buildingsAlong.push_back(MFloatPoint( wsp * from * cos(alfa1) + v1.x, 0, wsp * from * sin(alfa1) + v1.z));
+	//buildingsAlong.push_back(MFloatPoint( wsp * to * cos(alfa1) + v1.x, 0, wsp * to * sin(alfa1) + v1.z));
+	Vector3 v(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
+	Vector3 u(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
+	v.setLength(from);
+	auto p1 = v.toPoints(v1.x, v1.y, v1.z).second;
+	u.setLength(to);
+	auto p2 = u.toPoints(v1.x, v1.y, v1.z).second;
+	buildingsAlong.push_back(MFloatPoint(p1.x, p1.y, p1.z));
+	buildingsAlong.push_back(MFloatPoint(p2.x, p2.y, p2.z));
+	std::string a1 = std::to_string(from) + "    " + std::to_string(to);
+	MString c1(a1.data());
+	MGlobal::displayInfo(c1);	
+	std::string a = std::to_string(p1.x) + "  " + std::to_string(p1.y) + "  " + std::to_string(p1.z) + "        " + std::to_string(p2.x) + "  " + std::to_string(p2.y) + "  " + std::to_string(p2.z);
+	MString c(a.data());
+	MGlobal::displayInfo(c);
 }
 
 void Street::addBuildingAlongAllStreet() {
