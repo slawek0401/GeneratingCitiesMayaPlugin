@@ -15,7 +15,7 @@ Point::Point(double x, double z) {
 	this->z = z;
 }
 
-bool Point::operator==(Point& other) {
+bool Point::operator==(const Point& other) const {
 	return this->x == other.x && this->y == other.y && this->z == other.z;
 }
 
@@ -38,4 +38,25 @@ Point Point::operator/=(double a) {
 	this->y /= a;
 	this->z /= a;
 	return *this;
+}
+
+bool Point::operator< (const Point &other) const {
+	if (this->x == other.x)
+		if (this->y == other.y)
+			return this->z < other.z;
+		else
+			return this->y < other.y;
+	return this->x < other.x;
+}
+
+bool Point::operator<= (const Point &other) const {
+	return *this == other || *this < other;
+}
+
+bool Point::operator> (const Point &other) const {
+	return !(*this <= other);
+}
+
+bool Point::operator>= (const Point &other) const {
+	return !(*this < other);
 }

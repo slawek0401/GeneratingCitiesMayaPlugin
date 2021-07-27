@@ -12,7 +12,7 @@
 
 class PointBasedAlgorythmGenerator
 {
-private:
+protected:
 	std::vector<Point> limitPoints;
 	std::vector<Point> roadsPoints;
 	std::vector<Street*> streets;
@@ -40,7 +40,7 @@ public:
 	void countCityDiagonal();
 	std::vector<Street*> generate();
 
-private:
+protected:
 	void randomPoints();
 	void randomMinDistPoints(double minDist, unsigned maxMistakes);
 	void randomFastNoicePoints();

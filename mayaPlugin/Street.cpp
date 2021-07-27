@@ -107,12 +107,12 @@ void Street::addBuildingAlongRelative(float from, float to, bool left){//(const 
 	auto p2 = u.toPoints(v1.x, v1.y, v1.z).second;
 	buildingsAlong.push_back(MFloatPoint(p1.x, p1.y, p1.z));
 	buildingsAlong.push_back(MFloatPoint(p2.x, p2.y, p2.z));
-	std::string a1 = std::to_string(from) + "    " + std::to_string(to);
-	MString c1(a1.data());
-	MGlobal::displayInfo(c1);	
-	std::string a = std::to_string(p1.x) + "  " + std::to_string(p1.y) + "  " + std::to_string(p1.z) + "        " + std::to_string(p2.x) + "  " + std::to_string(p2.y) + "  " + std::to_string(p2.z);
-	MString c(a.data());
-	MGlobal::displayInfo(c);
+	//std::string a1 = std::to_string(from) + "    " + std::to_string(to);
+	//MString c1(a1.data());
+	//MGlobal::displayInfo(c1);	
+	//std::string a = std::to_string(p1.x) + "  " + std::to_string(p1.y) + "  " + std::to_string(p1.z) + "        " + std::to_string(p2.x) + "  " + std::to_string(p2.y) + "  " + std::to_string(p2.z);
+	//MString c(a.data());
+	//MGlobal::displayInfo(c);
 }
 
 void Street::addBuildingAlongAllStreet() {
