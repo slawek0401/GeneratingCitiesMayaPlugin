@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="Algorythms.h" />
     <ClInclude Include="BinaryDivisionAlgorythmGenerator.h" />
+    <ClInclude Include="Boundaries.h" />
     <ClInclude Include="Building.h" />
     <ClInclude Include="BuildingsFactory.h" />
     <ClInclude Include="Cuboid.h" />
@@ -191,6 +192,7 @@
   <ItemGroup>
     <ClCompile Include="Algorythms.cpp" />
     <ClCompile Include="BinaryDivisionAlgorythmGenerator.cpp" />
+    <ClCompile Include="Boundaries.cpp" />
     <ClCompile Include="Building.cpp" />
     <ClCompile Include="BuildingsFactory.cpp" />
     <ClCompile Include="buildingType.h" />

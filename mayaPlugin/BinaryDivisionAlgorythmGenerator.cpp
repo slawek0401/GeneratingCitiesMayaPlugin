@@ -12,7 +12,13 @@ BinaryDivisionAlgorythmGenerator::BinaryDivisionAlgorythmGenerator(TextureFactor
 	this->zMin = zMin;
 	this->zMax = zMax;
 }
+Boundaries fun(Boundaries& bound) {
+	return bound;
+}
 
+Point fun(Point& bound) {
+	return bound;
+}
 std::vector<Street*> BinaryDivisionAlgorythmGenerator::generate() {
 	//std::vector<Street*> streets;
 	
@@ -24,27 +30,23 @@ std::vector<Street*> BinaryDivisionAlgorythmGenerator::generate() {
 	unsigned topId = 1;
 	unsigned rightId = 2;
 	unsigned downId = 3;
-
-	generateRecursive(0, leftId, topId, rightId, downId, true);
+	Boundaries bound(leftId, topId, rightId, downId);
+	generateRecursive(0, bound, true);
 	findPointsWithRoadConnections();
 	addStreets();
 	addCrossings();
-	showDebug("binary");
-	showDebug(std::to_string(divisionsNumber));
-	showDebug(std::to_string(roadConnections.size()));
-	showDebug(std::to_string(streets.size()));
-	showDebug(std::to_string(roadsPoints.size()));
 	return streets;
 }
 
-void BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, unsigned leftId, unsigned topId, unsigned rightId, unsigned downId, bool horizontal) {
+
+Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Boundaries& bound, bool horizontal) {
 	if (iter >= divisionsNumber)
-		return;
-	showDebug("dupa");
-	double minValX = roadConnections[leftId].first.x;
-	double maxValX = roadConnections[rightId].first.x;
-	double minValZ = roadConnections[downId].first.z;
-	double maxValZ = roadConnections[topId].first.z;
+		return bound;
+
+	double minValX = roadConnections[bound.leftId[0]].first.x;
+	double maxValX = roadConnections[bound.rightId[0]].first.x;
+	double minValZ = roadConnections[bound.downId[0]].first.z;
+	double maxValZ = roadConnections[bound.topId[0]].first.z;
 	
 	if (horizontal) {
 		double mi = (minValX + maxValX) / 2;
@@ -54,11 +56,27 @@ void BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, unsigned
 			division = mi;
 	
 		roadConnections.push_back(std::make_pair(Point(division, minValZ), Point(division, maxValZ)));
+		unsigned foundTopId = findTopId(bound, division);
+		unsigned foundDownId = findDownId(bound, division);
 		unsigned newId1 = roadConnections.size() - 1;
-		unsigned newId2 = divideRoadConnetion(topId, division, horizontal);
-		unsigned newId3 = divideRoadConnetion(downId, division, horizontal);
-		generateRecursive(iter + 1, leftId, topId, newId1, downId, !horizontal);
-		generateRecursive(iter + 2, newId1, newId2, rightId, newId3, !horizontal);
+		unsigned newId2 = divideRoadConnetion(foundTopId, division, horizontal);
+		unsigned newId3 = divideRoadConnetion(foundDownId, division, horizontal);
+		bound.topId.push_back(newId2);
+		bound.downId.push_back(newId3);
+		Boundaries boundLeft, boundRight;
+		bound.splitHorizontal(foundTopId, foundDownId, newId1, roadConnections, boundLeft, boundRight);
+
+		Boundaries boundRes1 = generateRecursive(iter + 1, boundLeft, !horizontal);
+		boundRight.leftId.clear();
+		boundRight.addAllLeft(boundRes1.rightId);
+
+		Boundaries boundRes2 = generateRecursive(iter + 2, boundRight, !horizontal);
+		Boundaries boundRes = boundRes1;
+		boundRes.addAllTop(boundRes2.topId);
+		boundRes.addAllDown(boundRes2.downId);
+		boundRes.rightId.clear();
+		boundRes.addAllRight(boundRes2.rightId);
+		return boundRes;
 	}
 	else {
 		double mi = (minValZ + maxValZ) / 2;
@@ -68,11 +86,27 @@ void BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, unsigned
 			division = mi;
 
 		roadConnections.push_back(std::make_pair(Point(minValX, division), Point(maxValX, division)));
+		unsigned foundLeftId = findLeftId(bound, division);
+		unsigned foundRightId = findRightId(bound, division);
 		unsigned newId1 = roadConnections.size() - 1;
-		unsigned newId2 = divideRoadConnetion(leftId, division, horizontal);
-		unsigned newId3 = divideRoadConnetion(rightId, division, horizontal);
-		generateRecursive(iter + 1, leftId, topId, rightId, newId1, !horizontal);
-		generateRecursive(iter + 2, newId1, newId1, newId3, downId , !horizontal);
+		unsigned newId2 = divideRoadConnetion(foundLeftId, division, horizontal);
+		unsigned newId3 = divideRoadConnetion(foundRightId, division, horizontal);
+		bound.leftId.push_back(newId2);
+		bound.rightId.push_back(newId3);
+		Boundaries boundDown, boundTop;
+		bound.splitVertical(foundLeftId, foundRightId, newId1, roadConnections, boundDown, boundTop);
+
+		Boundaries boundRes1 = generateRecursive(iter + 1, boundDown, !horizontal);
+		boundTop.downId.clear();
+		boundTop.addAllDown(boundRes1.topId);
+
+		Boundaries boundRes2 = generateRecursive(iter + 2, boundTop, !horizontal);
+		Boundaries boundRes = boundRes1;
+		boundRes.addAllLeft(boundRes2.leftId);
+		boundRes.addAllRight(boundRes2.rightId);
+		boundRes.topId.clear();
+		boundRes.addAllTop(boundRes2.topId);
+		return boundRes;
 	}
 }
 
@@ -99,4 +133,22 @@ void BinaryDivisionAlgorythmGenerator::findPointsWithRoadConnections() {
 	for (auto p : setOfPoints) {
 		roadsPoints.push_back(p);
 	}
+}
+
+unsigned BinaryDivisionAlgorythmGenerator::findLeftId(Boundaries bound, double division) {
+	return findConnectionId(bound.leftId, division, [](Point a) {return a.z; });
+}
+unsigned BinaryDivisionAlgorythmGenerator::findTopId(Boundaries bound, double division) {
+	return findConnectionId(bound.topId, division, [](Point a) {return a.x; });
+}
+unsigned BinaryDivisionAlgorythmGenerator::findRightId(Boundaries bound, double division) {
+	return findConnectionId(bound.rightId, division, [](Point a) {return a.z; });
+}
+unsigned BinaryDivisionAlgorythmGenerator::findDownId(Boundaries bound, double division) {
+	return findConnectionId(bound.downId, division, [](Point a) {return a.x; });
+}
+unsigned BinaryDivisionAlgorythmGenerator::findConnectionId(std::vector<unsigned> ids, double division, double (*getParam)(Point)) {
+	for (auto i : ids) 
+		if (division >= (*getParam)(roadConnections[i].first) && division <= (*getParam)(roadConnections[i].second))
+			return i;
 }

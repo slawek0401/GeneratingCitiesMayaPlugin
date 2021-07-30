@@ -266,11 +266,6 @@ void PointBasedAlgorythmGenerator::addCrossings() {
 }
 
 void PointBasedAlgorythmGenerator::addStreets() {
-	showDebug("point");
-	showDebug(std::to_string(roadConnections.size()));
-	showDebug(std::to_string(streets.size()));
-	showDebug(std::to_string(roadsPoints.size()));
-
 	std::vector<std::vector<double>> streetsBuildings(roadConnections.size(), std::vector<double>(4,0.0));
 	/*for (size_t i = 0; i < roadConnections.size(); ++i) {
 		std::vector<double> vec(4, 0);
@@ -320,10 +315,8 @@ void PointBasedAlgorythmGenerator::addStreets() {
 		//showDebug(DEGUB);
 	}
 	for (auto i = roadConnections.begin(); i != roadConnections.end(); ++i) {
-		showDebug("aaa");
 		streets.push_back(createStreet((*i).first, (*i).second, streetsBuildings[i - roadConnections.begin()]));
 	}
-	showDebug(std::to_string(streets.size()));
 }
 
 void PointBasedAlgorythmGenerator::findRoadConnections(double minLength, double maxLength) {

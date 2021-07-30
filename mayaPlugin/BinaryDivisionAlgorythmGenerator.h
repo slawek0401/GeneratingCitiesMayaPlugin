@@ -5,6 +5,7 @@
 #include "TextureFactory.h"
 #include "Street.h"
 #include "PointBasedAlgorythmGenerator.h"
+#include "Boundaries.h"
 
 class BinaryDivisionAlgorythmGenerator : private PointBasedAlgorythmGenerator
 {
@@ -27,7 +28,12 @@ public:
 	std::vector<Street*> generate();
 private:
 	unsigned divideRoadConnetion(unsigned connectionId, double division, bool horizontal);
-	void generateRecursive(unsigned iter, unsigned leftId, unsigned topId, unsigned rightId, unsigned downId, bool horizontal);
+	Boundaries generateRecursive(unsigned iter, Boundaries& bound, bool horizontal);
 	void findPointsWithRoadConnections();
+	unsigned findLeftId(Boundaries bound, double division);
+	unsigned findTopId(Boundaries bound, double division);
+	unsigned findRightId(Boundaries bound, double division);
+	unsigned findDownId(Boundaries bound, double division);
+	unsigned findConnectionId(std::vector<unsigned> ids, double division, double (*getParam)(Point));
 };
 
