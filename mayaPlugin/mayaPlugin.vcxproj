@@ -172,6 +172,8 @@
     <ClInclude Include="BuildingsFactory.h" />
     <ClInclude Include="Cuboid.h" />
     <ClInclude Include="FastNoiseLite.h" />
+    <ClInclude Include="FractalGenerator.h" />
+    <ClInclude Include="GeneratorAbstract.h" />
     <ClInclude Include="Lamp.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Plane.h" />
@@ -197,6 +199,8 @@
     <ClCompile Include="BuildingsFactory.cpp" />
     <ClCompile Include="buildingType.h" />
     <ClCompile Include="Cuboid.cpp" />
+    <ClCompile Include="FractalGenerator.cpp" />
+    <ClCompile Include="GeneratorAbstract.cpp" />
     <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="mayaPlugin.cpp" />
     <ClCompile Include="pch.cpp">

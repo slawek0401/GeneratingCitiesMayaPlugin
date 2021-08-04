@@ -38,11 +38,17 @@ void addTrafficLight(TextureFactory texFactory, Street* str, std::vector<Primiti
 //basic
 std::vector<unsigned> range(unsigned count);
 std::vector<unsigned> randRange(unsigned count);
+double countDistance(Point p, Point q);
+double pow2(double a);
 
 //vector 
 bool intersects(std::pair<Point, Point> a, std::pair<Point, Point> b);
 double vectorProduct(Vector3 v, Vector3 u);
 void removeDuplicates(std::vector<size_t>& vec);
+template <typename T>
+long findElement(std::vector<T> vec, T elem);
+template <typename T>
+void addAll(std::vector<T>& vec, std::vector<T>& vecToAdd);
 
 //debug
 void showDebug(std::string a);

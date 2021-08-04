@@ -340,3 +340,25 @@ void showDebug(std::string a) {
 	MString c(a.data());
 	MGlobal::displayInfo(c);
 }
+
+double countDistance(Point p, Point q) {
+	return sqrt(pow2(p.x - q.x) + pow2(p.y - q.y) + pow2(p.z - q.z));
+}
+
+double pow2(double a) {
+	return a * a;
+}
+
+template <typename T>
+long findElement(std::vector<T> vec, T elem) {
+	for (long i = 0; i < vec.size(); ++i)
+		if (vec[i] == elem)
+			return i;
+	return -1;
+}
+
+template <typename T>
+void addAll(std::vector<T>& vec, std::vector<T>& vecToAdd) {
+	for (auto elem : vecToAdd)
+		vec.push_back(elem);
+}

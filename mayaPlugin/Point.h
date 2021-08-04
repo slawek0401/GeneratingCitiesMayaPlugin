@@ -10,6 +10,7 @@ public:
 	Point(double x, double y, double z);
 	Point(double x, double z);
 	bool operator==(const Point& other) const;
+	bool operator!=(const Point& other) const;
 	Point operator+=(const  Point& other);
 	Point operator-=(const  Point& other);
 	Point operator/=(double a);

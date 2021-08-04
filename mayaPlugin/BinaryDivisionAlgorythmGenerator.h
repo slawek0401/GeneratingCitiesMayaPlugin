@@ -7,7 +7,7 @@
 #include "PointBasedAlgorythmGenerator.h"
 #include "Boundaries.h"
 
-class BinaryDivisionAlgorythmGenerator : private PointBasedAlgorythmGenerator
+class BinaryDivisionAlgorythmGenerator : public PointBasedAlgorythmGenerator
 {
 private:
 	unsigned divisionsNumber;

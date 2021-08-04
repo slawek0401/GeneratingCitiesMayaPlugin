@@ -33,8 +33,10 @@ std::vector<Street*> BinaryDivisionAlgorythmGenerator::generate() {
 	Boundaries bound(leftId, topId, rightId, downId);
 	generateRecursive(0, bound, true);
 	findPointsWithRoadConnections();
-	addStreets();
-	addCrossings();
+	if (!ignoreVisualObjects) {
+		addStreets();
+		addCrossings();
+	}
 	return streets;
 }
 
