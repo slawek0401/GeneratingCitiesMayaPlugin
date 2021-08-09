@@ -45,10 +45,21 @@ double pow2(double a);
 bool intersects(std::pair<Point, Point> a, std::pair<Point, Point> b);
 double vectorProduct(Vector3 v, Vector3 u);
 void removeDuplicates(std::vector<size_t>& vec);
+
 template <typename T>
-long findElement(std::vector<T> vec, T elem);
+long findElement(std::vector<T> vec, T elem) {
+	for (long i = 0; i < vec.size(); ++i)
+		if (vec[i] == elem)
+			return i;
+	return -1;
+}
+
 template <typename T>
-void addAll(std::vector<T>& vec, std::vector<T>& vecToAdd);
+void addAll(std::vector<T>& vec, std::vector<T>& vecToAdd) {
+	for (auto elem : vecToAdd)
+		vec.push_back(elem);
+}
 
 //debug
 void showDebug(std::string a);
+void showDebug(double a);

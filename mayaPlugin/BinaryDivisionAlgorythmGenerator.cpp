@@ -20,8 +20,7 @@ Point fun(Point& bound) {
 	return bound;
 }
 std::vector<Street*> BinaryDivisionAlgorythmGenerator::generate() {
-	//std::vector<Street*> streets;
-	
+	checkXYMinMax();
 	roadConnections.push_back(std::make_pair(Point(xMin, zMin), Point(xMin, zMax)));
 	roadConnections.push_back(std::make_pair(Point(xMin, zMax), Point(xMax, zMax)));
 	roadConnections.push_back(std::make_pair(Point(xMax, zMin), Point(xMax, zMax)));
@@ -40,7 +39,6 @@ std::vector<Street*> BinaryDivisionAlgorythmGenerator::generate() {
 	return streets;
 }
 
-
 Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Boundaries& bound, bool horizontal) {
 	if (iter >= divisionsNumber)
 		return bound;
@@ -49,7 +47,7 @@ Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Bo
 	double maxValX = roadConnections[bound.rightId[0]].first.x;
 	double minValZ = roadConnections[bound.downId[0]].first.z;
 	double maxValZ = roadConnections[bound.topId[0]].first.z;
-	
+
 	if (horizontal) {
 		double mi = (minValX + maxValX) / 2;
 		double sigma = (maxValX - minValX) / 6;
@@ -134,6 +132,17 @@ void BinaryDivisionAlgorythmGenerator::findPointsWithRoadConnections() {
 	}
 	for (auto p : setOfPoints) {
 		roadsPoints.push_back(p);
+	}
+}
+
+void BinaryDivisionAlgorythmGenerator::checkXYMinMax() {
+	if (xMin == 0 && xMax == 0 && zMin == 0 && zMax == 0 && limitPoints.size() >= 3) {
+		auto pairX = std::minmax_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.x < b.x; });
+		auto pairZ = std::minmax_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.z < b.z; });
+		this->xMin = (*(pairX.first)).x;
+		this->xMax = (*(pairX.second)).x;
+		this->zMin = (*(pairZ.first)).z;
+		this->zMax = (*(pairZ.second)).z;
 	}
 }
 

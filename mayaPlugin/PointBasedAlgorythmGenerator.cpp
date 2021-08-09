@@ -5,8 +5,8 @@
 PointBasedAlgorythmGenerator::PointBasedAlgorythmGenerator(TextureFactory texFactory, unsigned pointNumber, double xMin, double xMax, double zMin, double zMax) : PointBasedAlgorythmGenerator(texFactory, pointNumber){
 	limitPoints.push_back(Point(xMin, zMin));
 	limitPoints.push_back(Point(xMin, zMax));
-	limitPoints.push_back(Point(xMax, zMin));
 	limitPoints.push_back(Point(xMax, zMax));
+	limitPoints.push_back(Point(xMax, zMin));
 }
 
 PointBasedAlgorythmGenerator::PointBasedAlgorythmGenerator(TextureFactory texFactory, unsigned pointNumber) {
@@ -15,11 +15,21 @@ PointBasedAlgorythmGenerator::PointBasedAlgorythmGenerator(TextureFactory texFac
 }
 
 std::vector<double> PointBasedAlgorythmGenerator::findXLimits(double z) {
-	Point xMin = *std::min_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.x < b.x; });
-	Point xMax = *std::max_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.x < b.x; });
 	std::vector<double> result;
-	result.push_back(xMin.x);
-	result.push_back(xMax.x);
+	showDebug("find limits");
+	for (unsigned i = 1; i <= limitPoints.size(); ++i) {
+		double z1 = limitPoints[i - 1].z;
+		double x1 = limitPoints[i - 1].x;
+		double z2 = limitPoints[i % limitPoints.size()].z;
+		double x2 = limitPoints[i % limitPoints.size()].x;
+		if (z < z2 && z >= z1 || z > z2 && z <= z1
+			|| z <= z2 && z > z1 || z >= z2 && z < z1) {
+			result.push_back(x1 + (x2 - x1) * (z - z1) / (z2 - z1));
+			showDebug(result[result.size() - 1]);
+		}
+	}
+	std::sort(result.begin(), result.end());
+	showDebug("size: " + std::to_string(result.size()));
 	return result;
 }
 
@@ -29,6 +39,10 @@ void PointBasedAlgorythmGenerator::randomPoints() {
 	for (size_t i = 0; i < pointNumber; ++i) {
 		double z = randomFactory.getLinearValue(zMin.z, zMax.z);
 		auto xLimits = findXLimits(z);
+		if (xLimits.size() < 2) {
+			--i;
+			continue;
+		}
 		double x = randomFactory.getLinearValue(xLimits[0], xLimits[1]);
 		roadsPoints.push_back(Point(x, z));
 	}
@@ -41,6 +55,10 @@ void PointBasedAlgorythmGenerator::randomMinDistPoints(double minDist, unsigned 
 	for (size_t i = 0; i < pointNumber && mistakesInRow < maxMistakes; ++i) {
 		double z = randomFactory.getLinearValue(zMin.z, zMax.z);
 		auto xLimits = findXLimits(z);
+		if (xLimits.size() < 2) {
+			--i;
+			continue;
+		}
 		double x = randomFactory.getLinearValue(xLimits[0], xLimits[1]);
 		Point point(x, z);
 		bool allPointsOK = true;
@@ -74,6 +92,8 @@ void PointBasedAlgorythmGenerator::randomFastNoicePoints() {
 	double limit = 0.8 - ((double)pointNumber / area / step1 / step2) * 2;
 	for (double z = zMin.z; z < zMax.z; z += step1) {
 		auto curXLimits = findXLimits(z);
+		if (xLimits.size() < 2) 
+			continue;
 		for (double x = curXLimits[0]; x < curXLimits[1]; x += step2) {
 			double val = noise.GetNoise((float)x, (float)z);
 			if (val > limit) {

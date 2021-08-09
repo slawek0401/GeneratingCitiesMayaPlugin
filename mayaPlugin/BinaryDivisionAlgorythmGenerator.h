@@ -11,7 +11,7 @@ class BinaryDivisionAlgorythmGenerator : public PointBasedAlgorythmGenerator
 {
 private:
 	unsigned divisionsNumber;
-	double xMin, xMax, zMin, zMax;
+	double xMin, xMax, zMin, zMax = 0;
 	/*TextureFactory texFactory;
 	RandomFactory randomFactory;
 	std::vector<Point> roadsPoints;
@@ -35,5 +35,6 @@ private:
 	unsigned findRightId(Boundaries bound, double division);
 	unsigned findDownId(Boundaries bound, double division);
 	unsigned findConnectionId(std::vector<unsigned> ids, double division, double (*getParam)(Point));
+	void checkXYMinMax();
 };
 

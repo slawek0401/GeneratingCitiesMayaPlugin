@@ -1,11 +1,5 @@
 #include "FractalGenerator.h"
 
-
-typedef struct mapParam {
-	bool foundOnLeft = false;
-	bool foundOnRight = false;
-};
-
 FractalGenerator::FractalGenerator(TextureFactory texFactory, double xMin, double xMax, double zMin, double zMax) {
 	this->texFactory = texFactory;
 	this->limitPoints.push_back(Point(xMin, zMin));
@@ -20,7 +14,19 @@ std::vector<Street*> FractalGenerator::generate() {
 	return this->streets;
 }
 
+void showLimits(std::vector<std::vector<Point>> limits) {
+	showDebug("limits size" + std::to_string(limits.size()));
+	for (auto limit : limits) {
+		showDebug("   limit " " size" + std::to_string(limit.size()));
+		for (auto p : limit) {
+			showDebug("        point x:" + std::to_string(p.x) + " y:" + std::to_string(p.y) + " z:" + std::to_string(p.z));
+		}
+
+	}
+}
+
 FractalGenerator& FractalGenerator::addGenerator(GeneratorAbstract& generator) {
+	showDebug("addGenerator");
 	generator.setIgnoreVisualObjects(true);
 	if (isFirstAlg) {
 		isFirstAlg = false;
@@ -29,38 +35,48 @@ FractalGenerator& FractalGenerator::addGenerator(GeneratorAbstract& generator) {
 		this->roadConnections = generator.roadConnections;
 		this->roadsPoints = generator.roadsPoints;
 	} else {
+		showDebug("przed count limit");
 		auto newLimits = countNewLimitPoints();
-		for (auto limit : newLimits) {
-			generator.limitPoints = limit;
-			generator.generate();
-			addAll<>(this->roadConnections, generator.roadConnections);
-			addAll<>(this->roadsPoints, generator.roadsPoints);
-		}
+		showDebug("po count limit");
+		showLimits(newLimits);
+		for (auto limit : newLimits) 
+			if (limit.size() >= 3) {
+				std::reverse(limit.begin(), limit.end());
+				generator.limitPoints = limit;
+				addAll<>(generator.roadsPoints, limit);
+				generator.generate();
+				addAll<>(this->roadConnections, generator.roadConnections);
+				addAll<>(this->roadsPoints, generator.roadsPoints);
+				generator.roadConnections.clear();
+				generator.roadsPoints.clear();
+			}
 	}
 	return *this;
 }
 
 std::vector<std::vector<Point>> FractalGenerator::countNewLimitPoints() {
 	std::vector<std::vector<Point>> result;
-	std::map<unsigned, mapParam> roadMap;
+	std::map<unsigned, mapParam> roadMap = initializeMap();
+
 	for (unsigned i = 0; i < roadConnections.size(); ++i) {
 		auto connection = roadConnections[i];
-		if (connection.first < connection.second && roadMap[i].foundOnRight || 
-			connection.first > connection.second && roadMap[i].foundOnLeft)
+		if (roadMap[i].foundOnLeft)
 			continue;
 
 		std::vector<Point> currResult;
 		currResult.push_back(connection.second);
 		unsigned newConnectionId = i;
-		connection.first < connection.second ? roadMap[i].foundOnRight = true : roadMap[i].foundOnLeft = true;
+		roadMap[i].foundOnLeft = true;
 		Point currentPoint = connection.first;
-		while (currentPoint != connection.second) {
+		auto firstConnection = connection;
+		while (currentPoint != firstConnection.second) {
 			currResult.push_back(currentPoint);
 			auto prevConnectionId = newConnectionId;
 			newConnectionId = findAnotherConnectionId(newConnectionId, currentPoint);
+			connection = roadConnections[newConnectionId];
 			if (prevConnectionId == newConnectionId) // to byla slepa uliczka
-				connection.first > connection.second ? roadMap[newConnectionId].foundOnRight = true : roadMap[newConnectionId].foundOnLeft = true;
-			connection.first < connection.second ? roadMap[newConnectionId].foundOnRight = true : roadMap[newConnectionId].foundOnLeft = true;
+				connection.second == currentPoint ? roadMap[newConnectionId].foundOnRight = true : roadMap[newConnectionId].foundOnLeft = true;
+			connection.first == currentPoint ? roadMap[newConnectionId].foundOnRight = true : roadMap[newConnectionId].foundOnLeft = true;
 			currentPoint = roadConnections[newConnectionId].first == currentPoint ? roadConnections[newConnectionId].second : roadConnections[newConnectionId].first;
 		}
 		result.push_back(currResult);
@@ -68,7 +84,7 @@ std::vector<std::vector<Point>> FractalGenerator::countNewLimitPoints() {
 	return result;
 }
 
-unsigned FractalGenerator::findAnotherConnectionId(unsigned i, Point p) {
+unsigned FractalGenerator::findAnotherConnectionId(unsigned i, Point p, bool left) {
 	auto crossingConnectionsIds = findPointsConnections(p);
 	auto rc = &roadConnections;
 	std::sort(crossingConnectionsIds.begin(), crossingConnectionsIds.end(),
@@ -77,7 +93,10 @@ unsigned FractalGenerator::findAnotherConnectionId(unsigned i, Point p) {
 			auto ar2 = (*rc)[b].first == p ? (*rc)[b].second : (*rc)[b].first;
 			return comparePointAngle(ar1, ar2, p);
 		});
-	return crossingConnectionsIds[(findElement<unsigned>(crossingConnectionsIds, i) + 1) % crossingConnectionsIds.size()];
+	if (left)
+		return crossingConnectionsIds[(findElement<unsigned>(crossingConnectionsIds, i) + crossingConnectionsIds.size() - 1) % crossingConnectionsIds.size()];
+	else
+		return crossingConnectionsIds[(findElement<unsigned>(crossingConnectionsIds, i) + 1) % crossingConnectionsIds.size()];
 }
 
 std::vector<unsigned> FractalGenerator::findPointsConnections(Point p) {
@@ -86,4 +105,38 @@ std::vector<unsigned> FractalGenerator::findPointsConnections(Point p) {
 		if (roadConnections[i].first == p || roadConnections[i].second == p)
 			roadConnectioIds.push_back(i);
 	return roadConnectioIds;
+}
+
+std::map<unsigned, mapParam> FractalGenerator::initializeMap() {
+	if (isMapInitialized)
+		return this->roadBoundariesMap;
+	Point firstPoint = *std::min_element(this->roadsPoints.begin(), this->roadsPoints.end());
+	auto connections = findPointsConnections(firstPoint);
+	auto rc = &roadConnections;
+	std::sort(connections.begin(), connections.end(),
+		[firstPoint, rc](unsigned a, unsigned b) {
+			auto ar1 = (*rc)[a].first == firstPoint ? (*rc)[a].second : (*rc)[a].first;
+			auto ar2 = (*rc)[b].first == firstPoint ? (*rc)[b].second : (*rc)[b].first;
+			return comparePointAngle(ar1, ar2, firstPoint);
+		});
+	
+	unsigned newConnectionId = connections[connections.size() - 1];
+	//unsigned newConnectionId = connections[0];
+	auto firstConnection = roadConnections[newConnectionId];
+	firstConnection.second == firstPoint ? roadBoundariesMap[newConnectionId].foundOnRight = true : roadBoundariesMap[newConnectionId].foundOnLeft = true;
+	showDebug("initializing map");
+	showDebug("   "+std::to_string(firstConnection.first.x) + " " + std::to_string(firstConnection.first.z) + "   " + std::to_string(firstConnection.second.x) + " " + std::to_string(firstConnection.second.z));
+
+	Point currentPoint = firstPoint;
+	while (currentPoint != firstConnection.second) {
+		auto prevConnectionId = newConnectionId;
+		newConnectionId = findAnotherConnectionId(newConnectionId, currentPoint/*, true*/);
+		auto connection = roadConnections[newConnectionId];
+		if (prevConnectionId == newConnectionId) // to byla slepa uliczka
+			connection.second == currentPoint ? roadBoundariesMap[newConnectionId].foundOnRight = true : roadBoundariesMap[newConnectionId].foundOnLeft = true;
+		connection.first == currentPoint ? roadBoundariesMap[newConnectionId].foundOnRight = true : roadBoundariesMap[newConnectionId].foundOnLeft = true;
+		currentPoint = roadConnections[newConnectionId].first == currentPoint ? roadConnections[newConnectionId].second : roadConnections[newConnectionId].first;
+		showDebug("   " + std::to_string(connection.first.x) + " " + std::to_string(connection.first.z) + "   " + std::to_string(connection.second.x) + " " + std::to_string(connection.second.z));
+	}
+	return this->roadBoundariesMap;
 }
