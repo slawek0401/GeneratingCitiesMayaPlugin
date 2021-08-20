@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GeneratorAbstract.h"
+#include "PointBasedAlgorythmGenerator.h"
+#include "BinaryDivisionAlgorythmGenerator.h"
 #include <map>
 
 //??? mo¿e robiæ obs³uge ka¿dego generatora osobno, a nie razem
@@ -27,14 +29,17 @@ protected:
 
 protected:
 	std::vector<std::vector<Point>> countNewLimitPoints();
+	void countNewLimitPointsForBinary(std::vector<Point> currLimit, BinaryDivisionAlgorythmGenerator& generator);
 	std::vector<unsigned> findPointsConnections(Point p);
 	unsigned findAnotherConnectionId(unsigned i, Point p, bool left = false);
 	std::map<unsigned, mapParam> initializeMap();
+	std::vector<RoadConnection> computeRoadConnectionFromLimitPoints(std::vector<Point> limit);
 
 public:
 	FractalGenerator() {};
 	FractalGenerator(TextureFactory texFactory, double xMin, double xMax, double zMin, double zMax);
 	std::vector<Street*> generate();
-	FractalGenerator& addGenerator(GeneratorAbstract& genetator);
+	FractalGenerator& addGenerator(PointBasedAlgorythmGenerator& genetator);
+	FractalGenerator& addGenerator(BinaryDivisionAlgorythmGenerator& genetator);
 };
 

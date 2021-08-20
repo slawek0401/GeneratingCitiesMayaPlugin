@@ -79,3 +79,7 @@ double Vector3::countSectionLength(Point a, Point b) {
 double Vector3::countSectionLength(std::pair<Point, Point> a) {
 	return Vector3::countSectionLength(a.first, a.second);
 }
+
+double Vector3::countSectionLength(RoadConnection a) {
+	return Vector3::countSectionLength(a.first, a.second);
+}

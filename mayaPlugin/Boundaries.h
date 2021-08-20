@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Point.h"
+#include "RoadConnection.h"
 
 class Boundaries
 {
@@ -20,8 +21,8 @@ public:
 	void addAllTop(const std::vector<unsigned>& other);
 	void addAllRight(const std::vector<unsigned>& other);
 	void addAllDown(const std::vector<unsigned>& other);
-	void splitHorizontal(unsigned topSplitId, unsigned downSplitId, unsigned betweenId, const std::vector<std::pair<Point, Point>> roadConnections, Boundaries& boundLeft, Boundaries& boundRight);
-	void splitVertical(unsigned leftSplitId, unsigned rightSplitId, unsigned betweenId, const std::vector<std::pair<Point, Point>> roadConnections, Boundaries& boundDown, Boundaries& boundTop);
+	void splitHorizontal(unsigned topSplitId, unsigned downSplitId, unsigned betweenId, const std::vector<RoadConnection> roadConnections, Boundaries& boundLeft, Boundaries& boundRight);
+	void splitVertical(unsigned leftSplitId, unsigned rightSplitId, unsigned betweenId, const std::vector<RoadConnection> roadConnections, Boundaries& boundDown, Boundaries& boundTop);
 	void clear();
 
 private:

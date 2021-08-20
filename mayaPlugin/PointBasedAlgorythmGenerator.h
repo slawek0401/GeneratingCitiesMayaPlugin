@@ -18,6 +18,8 @@ class PointBasedAlgorythmGenerator : public GeneratorAbstract
 //	std::vector<Point> roadsPoints;
 //	std::vector<Street*> streets;
 	unsigned pointNumber;
+	unsigned undeletableRoadConnectionIndex = 0;
+	std::string type = "minDist";
 //	RandomFactory randomFactory;
 //	Point cityCenter;
 //	double cityDiagonal = 0;
@@ -34,15 +36,17 @@ public:
 	PointBasedAlgorythmGenerator(TextureFactory texFactory, unsigned pointNumber);
 	PointBasedAlgorythmGenerator(TextureFactory texFactory, unsigned pointNumber, double xMin, double xMax, double zMin, double zMax);
 	std::vector<Street*> generate();
+	void setUndeletableRoadConnectionIndex(unsigned);
+	void setType(std::string type);
 
 protected:
 	void randomPoints();
 	void randomMinDistPoints(double minDist, unsigned maxMistakes);
 	void randomFastNoicePoints();
-	void findRoadConnections(double minLength=4, double maxLength=20);
+	void findRoadConnections(double minLength=10, double maxLength=30);
 	std::vector<double> findXLimits(double z);
 	void deleteRoadsIntersections();
 	void deleteSmallAngleRoads();
-
+	bool canBeDeleted(unsigned roadConnectionId);
 };
 

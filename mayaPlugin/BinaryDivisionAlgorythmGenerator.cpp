@@ -21,10 +21,10 @@ Point fun(Point& bound) {
 }
 std::vector<Street*> BinaryDivisionAlgorythmGenerator::generate() {
 	checkXYMinMax();
-	roadConnections.push_back(std::make_pair(Point(xMin, zMin), Point(xMin, zMax)));
-	roadConnections.push_back(std::make_pair(Point(xMin, zMax), Point(xMax, zMax)));
-	roadConnections.push_back(std::make_pair(Point(xMax, zMin), Point(xMax, zMax)));
-	roadConnections.push_back(std::make_pair(Point(xMin, zMin), Point(xMax, zMin)));
+	roadConnections.push_back(RoadConnection(Point(xMin, zMin), Point(xMin, zMax)));
+	roadConnections.push_back(RoadConnection(Point(xMin, zMax), Point(xMax, zMax)));
+	roadConnections.push_back(RoadConnection(Point(xMax, zMin), Point(xMax, zMax)));
+	roadConnections.push_back(RoadConnection(Point(xMin, zMin), Point(xMax, zMin)));
 	unsigned leftId = 0;
 	unsigned topId = 1;
 	unsigned rightId = 2;
@@ -55,7 +55,7 @@ Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Bo
 		if (division < minValX || division > maxValX)
 			division = mi;
 	
-		roadConnections.push_back(std::make_pair(Point(division, minValZ), Point(division, maxValZ)));
+		roadConnections.push_back(RoadConnection(Point(division, minValZ), Point(division, maxValZ)));
 		unsigned foundTopId = findTopId(bound, division);
 		unsigned foundDownId = findDownId(bound, division);
 		unsigned newId1 = roadConnections.size() - 1;
@@ -85,7 +85,7 @@ Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Bo
 		if (division < minValZ || division > maxValZ)
 			division = mi;
 
-		roadConnections.push_back(std::make_pair(Point(minValX, division), Point(maxValX, division)));
+		roadConnections.push_back(RoadConnection(Point(minValX, division), Point(maxValX, division)));
 		unsigned foundLeftId = findLeftId(bound, division);
 		unsigned foundRightId = findRightId(bound, division);
 		unsigned newId1 = roadConnections.size() - 1;
@@ -114,11 +114,11 @@ unsigned BinaryDivisionAlgorythmGenerator::divideRoadConnetion(unsigned connecti
 	Point temp = roadConnections[connectionId].second;
 	if (horizontal) {
 		roadConnections[connectionId].second = Point(division, temp.z);
-		roadConnections.push_back(std::make_pair(Point(division, temp.z), temp));
+		roadConnections.push_back(RoadConnection(Point(division, temp.z), temp));
 	} 
 	else {
 		roadConnections[connectionId].second = Point(temp.x, division);
-		roadConnections.push_back(std::make_pair(Point(temp.x, division), temp));
+		roadConnections.push_back(RoadConnection(Point(temp.x, division), temp));
 	}
 	// returning new connetion ID
 	return roadConnections.size() - 1;

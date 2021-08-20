@@ -90,6 +90,9 @@
     <ClInclude Include="FractalGenerator.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="RoadConnection.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -168,6 +171,9 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="FractalGenerator.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="RoadConnection.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>

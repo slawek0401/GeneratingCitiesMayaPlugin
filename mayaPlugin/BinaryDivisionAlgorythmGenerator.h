@@ -9,6 +9,7 @@
 
 class BinaryDivisionAlgorythmGenerator : public PointBasedAlgorythmGenerator
 {
+	friend class FractalGenerator;
 private:
 	unsigned divisionsNumber;
 	double xMin, xMax, zMin, zMax = 0;
@@ -26,6 +27,7 @@ public:
 	BinaryDivisionAlgorythmGenerator(TextureFactory texFactory, unsigned divisionsNumber);
 	BinaryDivisionAlgorythmGenerator(TextureFactory texFactory, unsigned divisionsNumber, double xMin, double xMax, double zMin, double zMax);
 	std::vector<Street*> generate();
+
 private:
 	unsigned divideRoadConnetion(unsigned connectionId, double division, bool horizontal);
 	Boundaries generateRecursive(unsigned iter, Boundaries& bound, bool horizontal);

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include "Point.h"
+#include "RoadConnection.h"
 
 class Vector3
 {
@@ -27,5 +28,6 @@ public:
 	Vector3 operator+(const Vector3& other);
 	static double countSectionLength(Point a, Point b);
 	static double countSectionLength(std::pair<Point, Point> a);
+	static double countSectionLength(RoadConnection a);
 };
 

@@ -184,6 +184,7 @@
     <ClInclude Include="Pyramid.h" />
     <ClInclude Include="RandomFactory.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RoadConnection.h" />
     <ClInclude Include="Street.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureFactory.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="RandomFactory.cpp" />
+    <ClCompile Include="RoadConnection.cpp" />
     <ClCompile Include="Street.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureFactory.cpp" />

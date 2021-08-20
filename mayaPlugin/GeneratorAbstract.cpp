@@ -115,7 +115,7 @@ void GeneratorAbstract::addStreets() {
 			auto angleDiff = val - *iter;
 			double dist = 0.0;
 			if (angleDiff < M_PI && angleDiff > 0)
-				dist = 2 / tan(angleDiff / 2);
+				dist = streetWidth / tan(angleDiff / 2);
 			DEGUB += std::to_string(*iter) + "   ";
 			//showDebug(std::to_string(*iter2) + "   " + std::to_string(*iter) + "    "+ std::to_string(angleDiff) + "   " + std::to_string(dist));
 			auto i = thisCrossingRoadsIDs[index1];
@@ -132,11 +132,11 @@ void GeneratorAbstract::addStreets() {
 		//showDebug(DEGUB);
 	}
 	for (auto i = roadConnections.begin(); i != roadConnections.end(); ++i) {
-		streets.push_back(createStreet((*i).first, (*i).second, streetsBuildings[i - roadConnections.begin()]));
+		streets.push_back(createStreet((*i).first, (*i).second, streetsBuildings[i - roadConnections.begin()], (*i).width));
 	}
 }
 
-Street* GeneratorAbstract::createStreet(Point p, Point q, std::vector<double> buildingsAlong) {
+Street* GeneratorAbstract::createStreet(Point p, Point q, std::vector<double> buildingsAlong, double streetWidth) {
 	Point middlePoint(q.x - p.x, q.z - p.z);
 	double streetLength = countDistance(p, q) - 2 * streetWidth;
 	Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, streetWidth, streetWidth, streetLength);//w przeciwienstwie do tego ni¿ej tutaj ulica nie zaczyna siê idealnie w punkcie, jest miejsce na skrzyzowanie
@@ -170,4 +170,8 @@ BuildingType GeneratorAbstract::getBuildingTypeByDistanceFromCentre(Point p) {
 
 void GeneratorAbstract::setIgnoreVisualObjects(bool ignoreVisualObjects) {
 	this->ignoreVisualObjects = ignoreVisualObjects;
+}
+
+void GeneratorAbstract::setStreetWidth(double width) {
+	this->streetWidth = width;
 }

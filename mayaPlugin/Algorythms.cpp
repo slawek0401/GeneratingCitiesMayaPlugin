@@ -308,7 +308,7 @@ std::vector<unsigned> randRange(unsigned count) {
 	return randomFactory.shuffle<unsigned>(range(count));
 }
 
-bool intersects(std::pair<Point, Point> a, std::pair<Point, Point> b) {
+bool intersects(RoadConnection a, RoadConnection b) {
 	Vector3 v(a.first, a.second);
 	Vector3 u(b.first, b.second);
 

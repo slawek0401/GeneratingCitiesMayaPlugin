@@ -10,6 +10,7 @@
 #include "Polygon.h"
 #include "FastNoiseLite.h"
 #include "GeneratorAbstract.h"
+#include "RoadConnection.h"
 
 class GeneratorAbstract
 {
@@ -24,13 +25,14 @@ protected:
 	bool cityCenterSet = false;
 	bool cityDiagonalSet = false;
 	TextureFactory texFactory;
-	std::vector<std::pair<Point, Point>> roadConnections;
+	std::vector<RoadConnection> roadConnections;
 	double streetWidth = 2;
 	bool ignoreVisualObjects = false;
 
 public:
 	virtual std::vector<Street*> generate() = 0;
 	void setCityCenter(Point center);
+	void setStreetWidth(double width);
 	Point getCityCenter();
 	void countCityCenter();
 	void setCityDiagonal(double diagonal);
@@ -39,7 +41,7 @@ public:
 
 protected:
 	void addCrossings();
-	Street* createStreet(Point p, Point q, std::vector<double> buildingsAlong);
+	Street* createStreet(Point p, Point q, std::vector<double> buildingsAlong, double streetWidth);
 	BuildingType getBuildingTypeByDistanceFromCentre(Point p);
 	void addStreets();
 	static bool comparePointAngle(const Point& a, const Point& b, const Point& middle);

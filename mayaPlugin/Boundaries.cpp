@@ -48,7 +48,7 @@ void Boundaries::addAllDown(const std::vector<unsigned>& other) {
 	addAll(this->downId, other);
 }
 
-void Boundaries::splitHorizontal(unsigned topSplitId, unsigned downSplitId, unsigned betweenId, const std::vector<std::pair<Point, Point>> roadConnections, Boundaries& boundLeft, Boundaries&boundRight) {
+void Boundaries::splitHorizontal(unsigned topSplitId, unsigned downSplitId, unsigned betweenId, const std::vector<RoadConnection> roadConnections, Boundaries& boundLeft, Boundaries&boundRight) {
 	for (auto id : topId) 
 		if (roadConnections[id].second.x > roadConnections[topSplitId].second.x)
 			boundRight.topId.push_back(id);
@@ -69,7 +69,7 @@ void Boundaries::splitHorizontal(unsigned topSplitId, unsigned downSplitId, unsi
 
 }
 
-void Boundaries::splitVertical(unsigned leftSplitId, unsigned rightSplitId, unsigned betweenId, const std::vector<std::pair<Point, Point>> roadConnections, Boundaries& boundDown, Boundaries& boundTop) {
+void Boundaries::splitVertical(unsigned leftSplitId, unsigned rightSplitId, unsigned betweenId, const std::vector<RoadConnection> roadConnections, Boundaries& boundDown, Boundaries& boundTop) {
 	for (auto id : rightId)
 		if (roadConnections[id].second.z > roadConnections[rightSplitId].second.z)
 			boundTop.rightId.push_back(id);

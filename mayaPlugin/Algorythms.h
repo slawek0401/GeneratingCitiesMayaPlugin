@@ -42,7 +42,7 @@ double countDistance(Point p, Point q);
 double pow2(double a);
 
 //vector 
-bool intersects(std::pair<Point, Point> a, std::pair<Point, Point> b);
+bool intersects(RoadConnection a, RoadConnection b);
 double vectorProduct(Vector3 v, Vector3 u);
 void removeDuplicates(std::vector<size_t>& vec);
 
@@ -58,6 +58,12 @@ template <typename T>
 void addAll(std::vector<T>& vec, std::vector<T>& vecToAdd) {
 	for (auto elem : vecToAdd)
 		vec.push_back(elem);
+}
+
+template <typename T>
+void addAllFromIndex(std::vector<T>& vec, std::vector<T>& vecToAdd, unsigned j) {
+	for (unsigned i = j; i < vecToAdd.size(); ++i)
+		vec.push_back(vecToAdd[i]);
 }
 
 //debug

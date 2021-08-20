@@ -106,9 +106,12 @@ void PointBasedAlgorythmGenerator::randomFastNoicePoints() {
 
 std::vector<Street*> PointBasedAlgorythmGenerator::generate() {
 	showDebug("random points");
-	//randomPoints();
-	randomMinDistPoints(8, 30);
-	//randomFastNoicePoints();
+	if (type == "random")
+		randomPoints();
+	else if (type == "fastNoise")
+		randomFastNoicePoints();
+	else
+		randomMinDistPoints(15, 30);
 	if (!cityCenterSet)
 		countCityCenter();
 	if (!cityDiagonalSet)
@@ -137,7 +140,7 @@ void PointBasedAlgorythmGenerator::deleteRoadsIntersections() {
 				double l1 = Vector3::countSectionLength(*i);
 				double l2 = Vector3::countSectionLength(*j);
 				// usuwamy krotsza droge
-				if (l1 > l2) {
+				if (canBeDeleted(j - roadConnections.begin()) && l1 > l2 || !canBeDeleted(i - roadConnections.begin())) {
 					roadConnections.erase(j--);
 				}
 				else {
@@ -154,7 +157,7 @@ void PointBasedAlgorythmGenerator::deleteRoadsIntersections() {
 		if (!firstErased) {
 			++i;
 		}
-		else{
+		else {
 			firstErased = false;
 			i = roadConnections.begin();
 		}
@@ -187,10 +190,20 @@ void PointBasedAlgorythmGenerator::deleteSmallAngleRoads() {
 					if (abs(angles[i] - angles[j]) < M_PI / 6) {
 						double l1 = Vector3::countSectionLength(roadConnections[thisCrossingRoadsIDs[i]]);
 						double l2 = Vector3::countSectionLength(roadConnections[thisCrossingRoadsIDs[j]]);
-						if (l1 > l2)
+						if (canBeDeleted(thisCrossingRoadsIDs[j]) && l1 > l2 || !canBeDeleted(thisCrossingRoadsIDs[i]))
 							toDeleteCrossingRoadsIDs.push_back(thisCrossingRoadsIDs[j]);
 						else
 							toDeleteCrossingRoadsIDs.push_back(thisCrossingRoadsIDs[i]);
+						//if (canBeDeleted(thisCrossingRoadsIDs[j]) && canBeDeleted(thisCrossingRoadsIDs[i]))
+						//	if (l1 > l2)
+						//		toDeleteCrossingRoadsIDs.push_back(thisCrossingRoadsIDs[j]);
+						//	else
+						//		toDeleteCrossingRoadsIDs.push_back(thisCrossingRoadsIDs[i]);
+						//else
+						//	if (canBeDeleted(thisCrossingRoadsIDs[j]))
+						//		toDeleteCrossingRoadsIDs.push_back(thisCrossingRoadsIDs[j]);
+						//	else
+						//		toDeleteCrossingRoadsIDs.push_back(thisCrossingRoadsIDs[i]);				
 					}
 				}
 			}
@@ -214,9 +227,21 @@ void PointBasedAlgorythmGenerator::findRoadConnections(double minLength, double 
 			auto q = roadsPoints[i];
 			double distance = countDistance(p, q);
 			if (distance >= minLength && distance <= maxLength /*&& roadCount < 3 */ && p.z > q.z) {
-				roadConnections.push_back(std::make_pair(p, q));
+				roadConnections.push_back(RoadConnection(p, q));
 				++roadCount;
 			}
 		}
 	}
+}
+
+void PointBasedAlgorythmGenerator::setUndeletableRoadConnectionIndex(unsigned a) {
+	this->undeletableRoadConnectionIndex = a;
+}
+
+bool PointBasedAlgorythmGenerator::canBeDeleted(unsigned roadConnectionId) {
+	return roadConnectionId >= undeletableRoadConnectionIndex;
+}
+
+void PointBasedAlgorythmGenerator::setType(std::string type) {
+	this->type = type;
 }

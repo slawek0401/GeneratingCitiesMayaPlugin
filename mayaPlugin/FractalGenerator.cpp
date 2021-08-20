@@ -25,7 +25,7 @@ void showLimits(std::vector<std::vector<Point>> limits) {
 	}
 }
 
-FractalGenerator& FractalGenerator::addGenerator(GeneratorAbstract& generator) {
+FractalGenerator& FractalGenerator::addGenerator(PointBasedAlgorythmGenerator& generator) {
 	showDebug("addGenerator");
 	generator.setIgnoreVisualObjects(true);
 	if (isFirstAlg) {
@@ -43,7 +43,40 @@ FractalGenerator& FractalGenerator::addGenerator(GeneratorAbstract& generator) {
 			if (limit.size() >= 3) {
 				std::reverse(limit.begin(), limit.end());
 				generator.limitPoints = limit;
+				generator.roadConnections = computeRoadConnectionFromLimitPoints(limit);
+				generator.setUndeletableRoadConnectionIndex(limit.size());
 				addAll<>(generator.roadsPoints, limit);
+				generator.generate();
+				double streetWidth = generator.streetWidth;
+				std::for_each(generator.roadConnections.begin() + limit.size(), generator.roadConnections.end(), [streetWidth](RoadConnection& a) {a.width = streetWidth; });
+				addAllFromIndex<>(this->roadConnections, generator.roadConnections, limit.size());
+				addAllFromIndex<>(this->roadsPoints, generator.roadsPoints, limit.size());
+				generator.roadConnections.clear();
+				generator.roadsPoints.clear();
+			}
+	}
+	return *this;
+}
+
+FractalGenerator& FractalGenerator::addGenerator(BinaryDivisionAlgorythmGenerator& generator) {
+	showDebug("addGenerator");
+	generator.setIgnoreVisualObjects(true);
+	if (isFirstAlg) {
+		isFirstAlg = false;
+		generator.limitPoints = this->limitPoints;
+		generator.generate();
+		this->roadConnections = generator.roadConnections;
+		this->roadsPoints = generator.roadsPoints;
+	}
+	else {
+		showDebug("przed count limit");
+		auto newLimits = countNewLimitPoints();
+		showDebug("po count limit");
+		showLimits(newLimits);
+		for (auto limit : newLimits)
+			if (limit.size() >= 4) {
+				std::reverse(limit.begin(), limit.end());
+				countNewLimitPointsForBinary(limit, generator);
 				generator.generate();
 				addAll<>(this->roadConnections, generator.roadConnections);
 				addAll<>(this->roadsPoints, generator.roadsPoints);
@@ -52,6 +85,22 @@ FractalGenerator& FractalGenerator::addGenerator(GeneratorAbstract& generator) {
 			}
 	}
 	return *this;
+}
+
+std::vector<RoadConnection> FractalGenerator::computeRoadConnectionFromLimitPoints(std::vector<Point> limit) {
+	std::vector<RoadConnection> result;
+	for (unsigned i = 0; i < limit.size(); ++i) 
+		result.push_back(RoadConnection(limit[i], limit[( i + 1 ) % limit.size()]));
+	return result;
+}
+
+void FractalGenerator::countNewLimitPointsForBinary(std::vector<Point> currLimit, BinaryDivisionAlgorythmGenerator& generator) {
+	auto pairX = std::minmax_element(currLimit.begin(), currLimit.end(), [](Point a, Point b) {return a.x < b.x; });
+	auto pairZ = std::minmax_element(currLimit.begin(), currLimit.end(), [](Point a, Point b) {return a.z < b.z; });
+	generator.xMin = (*(pairX.first)).x;
+	generator.xMax = (*(pairX.second)).x;
+	generator.zMin = (*(pairZ.first)).z;
+	generator.zMax = (*(pairZ.second)).z;
 }
 
 std::vector<std::vector<Point>> FractalGenerator::countNewLimitPoints() {
