@@ -325,6 +325,25 @@ bool intersects(RoadConnection a, RoadConnection b) {
 	return  (p1 > 0 && p2 < 0 || p1 < 0 && p2>0) && (p3>0 && p4 < 0 || p3 < 0 && p4>0);
 }
 
+Point intersectionPoint(RoadConnection a, RoadConnection b) {
+	double x1 = a.first.x;
+	double z1 = a.first.z;
+	double x2 = a.second.x;
+	double z2 = a.second.z;
+
+	double x3 = b.first.x;
+	double z3 = b.first.z;
+	double x4 = b.second.x;
+	double z4 = b.second.z;
+
+	double d = (x1 - x2) * (z3 - z4) - (z1 - z2) * (x3 - x4);
+
+	double resX = ((x1 * z2 - z1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * z4 - z3 * x4)) / d;
+	double resZ = ((x1 * z2 - z1 * x2) * (z3 - z4) - (z1 - z2) * (x3 * z4 - z3 * x4)) / d;
+
+	return Point(resX, resZ);
+}
+
 double vectorProduct(Vector3 v, Vector3 u) {
 	return u.x * v.z - v.x * u.z;
 }

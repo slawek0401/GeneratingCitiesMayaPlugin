@@ -132,30 +132,90 @@ void GeneratorAbstract::addStreets() {
 		//showDebug(DEGUB);
 	}
 	for (auto i = roadConnections.begin(); i != roadConnections.end(); ++i) {
-		streets.push_back(createStreet((*i).first, (*i).second, streetsBuildings[i - roadConnections.begin()], (*i).width));
+		auto res = createStreet(*i, streetsBuildings[i - roadConnections.begin()]);
+		addAll<>(streets, res);
 	}
 }
 
-Street* GeneratorAbstract::createStreet(Point p, Point q, std::vector<double> buildingsAlong, double streetWidth) {
+std::vector<Street*> GeneratorAbstract::createStreet(RoadConnection rc, std::vector<double> buildingsAlong) {
+	auto walkPathTex = texFactory.getRandomTextureByType(TextureType::chodnik);
+	auto streetTex = texFactory.getRandomStreetTexture();
+	
+	Point p = rc.first;
+	Point q = rc.second;
+	double streetWidth = rc.width;
+
 	Point middlePoint(q.x - p.x, q.z - p.z);
-	double streetLength = countDistance(p, q) - 2 * streetWidth;
-	Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, streetWidth, streetWidth, streetLength);//w przeciwienstwie do tego ni¿ej tutaj ulica nie zaczyna siê idealnie w punkcie, jest miejsce na skrzyzowanie
+	std::vector<Street*> res;
+	Street* street;
+	if (rc.hasBridges()) {
+		Vector3 vec(rc.first, rc.bridges[0]);
+		vec.setLength(vec.countLength() - 1.5 * streetWidth - 1);
+		auto points = vec.toPoints(rc.first);
+		street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, streetWidth, streetWidth, vec.countLength());
+		res.push_back(street);
+		setStreetVisualProperies(street, buildingsAlong, true, points.first, points.second, vec.countLength(), streetTex, walkPathTex);
+		vec.setLength(vec.countLength() + streetWidth);
+		points = vec.toPoints(rc.first);
+		for (unsigned i = 0; i < rc.bridges.size(); ++i) {
+			auto intersection = rc.bridges[i];
+			vec.setLength(streetWidth + 2);
+			points = vec.toPoints(points.second);
+			street = new Bridge(0.15, -streetWidth / 2, 0, streetWidth, streetWidth + 2);
+			res.push_back(street);
+			setStreetVisualProperies(street, buildingsAlong, false, points.first, points.second, streetWidth + 2, streetTex, walkPathTex);
+			
+			auto nextPoint = i == rc.bridges.size() - 1 ? q : rc.bridges[i + 1];
+			street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, 0, streetWidth, Vector3::countSectionLength(intersection, nextPoint) - streetWidth - 2);
+			vec.setLength(Vector3::countSectionLength(intersection, nextPoint) - streetWidth - 2);
+			points = vec.toPoints(points.second);
+			setStreetVisualProperies(street, buildingsAlong, true, points.first, points.second, streetWidth + 2, streetTex, walkPathTex);
+			res.push_back(street);
+			
+			//Vector3 vec(toReplace->first, toReplace->second);
+
+			//vec.setLength(Vector3::countSectionLength(toReplace->first, intersection) - 2);
+			//toReplace->second = vec.toPoints(toReplace->first).second;
+
+			//vec.setLength(4);
+			//auto newPoints = vec.toPoints(toReplace->second);
+			//RoadConnection bridge(newPoints.first, newPoints.second);
+			//bridge.bridge = true;
+			//roadConnections.push_back(bridge);
+
+			//vec.setLength(Vector3::countSectionLength(intersection, toReplace->second) - 2);
+			//newPoints = vec.toPoints(bridge.second);
+			//roadConnections.push_back(RoadConnection(newPoints.first, newPoints.second));
+		}
+	}
+	else {
+		double streetLength = countDistance(p, q);
+		street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, streetWidth, streetWidth, streetLength - 2 * streetWidth);//w przeciwienstwie do tego ni¿ej tutaj ulica nie zaczyna siê idealnie w punkcie, jest miejsce na skrzyzowanie
+		res.push_back(street);
+		setStreetVisualProperies(street, buildingsAlong, !rc.bridge, p, q, streetLength - 2 * streetWidth, streetTex, walkPathTex);
+	}
 	//Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -0.5, 0, 1, countDistance(p, q));
 	//Street(BuildingType neighbourhood, double walkPathFrac = 0.15, int x1 = 0, int z1 = 0, int width = 2, int length = 2);
+	
+	return res;
+}
+
+void GeneratorAbstract::setStreetVisualProperies(Street* street, std::vector<double> buildingsAlong, bool setBuildings, Point p, Point q, double streetLength, Texture strTex, Texture walkTex) {
 	double alfa = atan((q.z - p.z) / (q.x - p.x)) - M_PI / 2;
 	double addent = q.x - p.x < 0 ? M_PI : 0;
 	//double alfa2 = atan((b->front[0].z - b->front[1].z) / (b->front[0].x - b->front[1].x));
 	street->rotateY((alfa + addent) * 180 / M_PI);
 	street->move(p.x, p.y, p.z);
-	street->assignTexture(texFactory.getRandomTextureByType(TextureType::chodnik), texFactory.getRandomStreetTexture());
+	street->assignTexture(walkTex, strTex);
 	//showDebug(std::to_string(buildingsAlong[0]) + "   " + std::to_string(buildingsAlong[1]) + "   " + std::to_string(buildingsAlong[2]) + "   " + std::to_string(buildingsAlong[3]));
-	if (buildingsAlong[0] + buildingsAlong[1] < streetLength) {
-		street->addBuildingAlongRelative(buildingsAlong[0], streetLength - buildingsAlong[1], true);
+	if (setBuildings) {
+		if (buildingsAlong[0] + buildingsAlong[1] < streetLength) {
+			street->addBuildingAlongRelative(buildingsAlong[0], streetLength - buildingsAlong[1], true);
+		}
+		if (buildingsAlong[2] + buildingsAlong[3] < streetLength) {
+			street->addBuildingAlongRelative(buildingsAlong[2], streetLength - buildingsAlong[3], false);
+		}
 	}
-	if (buildingsAlong[2] + buildingsAlong[3] < streetLength) {
-		street->addBuildingAlongRelative(buildingsAlong[2], streetLength - buildingsAlong[3], false);
-	}
-	return street;
 }
 
 BuildingType GeneratorAbstract::getBuildingTypeByDistanceFromCentre(Point p) {

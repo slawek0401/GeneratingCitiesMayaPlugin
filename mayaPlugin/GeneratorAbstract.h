@@ -5,6 +5,7 @@
 #include "RandomFactory.h"
 #include "TextureFactory.h"
 #include "Street.h"
+#include "Bridge.h"
 #include "Algorythms.h"
 #include "Vector3.h"
 #include "Polygon.h"
@@ -40,8 +41,9 @@ public:
 	void countCityDiagonal();
 
 protected:
+	void setStreetVisualProperies(Street* street, std::vector<double> buildingsAlong, bool setBuildings, Point p, Point q, double streetLength, Texture strTex, Texture walkTex);
 	void addCrossings();
-	Street* createStreet(Point p, Point q, std::vector<double> buildingsAlong, double streetWidth);
+	std::vector<Street*> createStreet(RoadConnection rc, std::vector<double> buildingsAlong);
 	BuildingType getBuildingTypeByDistanceFromCentre(Point p);
 	void addStreets();
 	static bool comparePointAngle(const Point& a, const Point& b, const Point& middle);

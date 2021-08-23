@@ -43,10 +43,12 @@ protected:
 	void randomPoints();
 	void randomMinDistPoints(double minDist, unsigned maxMistakes);
 	void randomFastNoicePoints();
-	void findRoadConnections(double minLength=10, double maxLength=30);
+	void randomNoiseGeneratedPoints();
+	void findRoadConnections(double minLength=10, double maxLength=25);
 	std::vector<double> findXLimits(double z);
 	void deleteRoadsIntersections();
 	void deleteSmallAngleRoads();
 	bool canBeDeleted(unsigned roadConnectionId);
+	bool canBeReplacedByBridge(RoadConnection a, RoadConnection b);
 };
 

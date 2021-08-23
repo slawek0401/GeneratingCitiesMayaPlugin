@@ -10,6 +10,7 @@
 
 class Street : public Primitive
 {
+protected:
 	std::vector<MFloatPoint> buildingsAlong;
 	BuildingType neighbourhood;
 	bool parkOnLeft = false;

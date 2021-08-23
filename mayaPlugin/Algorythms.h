@@ -43,6 +43,7 @@ double pow2(double a);
 
 //vector 
 bool intersects(RoadConnection a, RoadConnection b);
+Point intersectionPoint(RoadConnection a, RoadConnection b);
 double vectorProduct(Vector3 v, Vector3 u);
 void removeDuplicates(std::vector<size_t>& vec);
 

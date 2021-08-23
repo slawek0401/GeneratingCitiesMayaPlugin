@@ -11,9 +11,6 @@ class Vector3
 public:
 	double x, y, z;
 
-private:
-	double countLength();
-
 public:
 	Vector3(double x, double y, double z);
 	Vector3(Point a, Point b);
@@ -26,6 +23,7 @@ public:
 	std::pair<Point, Point> toPoints(Point start);
 	std::pair<Point, Point> toPoints(double x, double y, double z);
 	Vector3 operator+(const Vector3& other);
+	double countLength();
 	static double countSectionLength(Point a, Point b);
 	static double countSectionLength(std::pair<Point, Point> a);
 	static double countSectionLength(RoadConnection a);

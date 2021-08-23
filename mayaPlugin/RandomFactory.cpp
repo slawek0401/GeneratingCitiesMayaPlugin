@@ -29,7 +29,7 @@ double RandomFactory::getNormalValue(double mi, double sigma) {
 	return random;
 }
 int RandomFactory::getLinearValue(int from, int to) {
-	static std::default_random_engine generator;
+	static std::default_random_engine generator(r());
 	std::uniform_int_distribution<int> distribution(from, to);
 	return distribution(generator);
 }
