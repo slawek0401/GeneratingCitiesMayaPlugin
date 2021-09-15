@@ -81,10 +81,10 @@ void PointBasedAlgorythmGenerator::randomMinDistPoints(double minDist, unsigned 
 
 void PointBasedAlgorythmGenerator::randomFastNoicePoints() {
 	FastNoiseLite noise;
-	//noise.SetFrequency(100);
-	//noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-	noise.SetFrequency(0.1);
-	noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	noise.SetFrequency(100);
+	noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	//noise.SetFrequency(1);
+	//noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	
 	//noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
 	Point zMin = *std::min_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.z < b.z; });
