@@ -16,7 +16,7 @@ PointBasedAlgorythmGenerator::PointBasedAlgorythmGenerator(TextureFactory texFac
 
 std::vector<double> PointBasedAlgorythmGenerator::findXLimits(double z) {
 	std::vector<double> result;
-	showDebug("find limits");
+	//showDebug("find limits");
 	for (unsigned i = 1; i <= limitPoints.size(); ++i) {
 		double z1 = limitPoints[i - 1].z;
 		double x1 = limitPoints[i - 1].x;
@@ -25,11 +25,11 @@ std::vector<double> PointBasedAlgorythmGenerator::findXLimits(double z) {
 		if (z < z2 && z >= z1 || z > z2 && z <= z1
 			|| z <= z2 && z > z1 || z >= z2 && z < z1) {
 			result.push_back(x1 + (x2 - x1) * (z - z1) / (z2 - z1));
-			showDebug(result[result.size() - 1]);
+			//showDebug(result[result.size() - 1]);
 		}
 	}
 	std::sort(result.begin(), result.end());
-	showDebug("size: " + std::to_string(result.size()));
+	//showDebug("size: " + std::to_string(result.size()));
 	return result;
 }
 
@@ -81,37 +81,38 @@ void PointBasedAlgorythmGenerator::randomMinDistPoints(double minDist, unsigned 
 
 void PointBasedAlgorythmGenerator::randomFastNoicePoints() {
 	FastNoiseLite noise;
-	noise.SetFrequency(100);
-	noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	//noise.SetFrequency(100);
+	//noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noise.SetFrequency(0.1);
+	noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	
+	//noise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
 	Point zMin = *std::min_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.z < b.z; });
 	Point zMax = *std::max_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.z < b.z; });
 	auto xLimits = findXLimits((zMin.z + zMax.z) / 2);
 	double area = (zMax.z - zMin.z) * (xLimits[1] - xLimits[0]);
-	double step1 = 3;
-	double step2 = 3;
-	double limit = 0.8 - ((double)pointNumber / area / step1 / step2) * 2;
+	double step1 = 0.5;
+	double step2 = 0.4;
+	double limit = ((double)pointNumber * step1 * step2 * 2) / area - 1;
 	for (double z = zMin.z; z < zMax.z; z += step1) {
 		auto curXLimits = findXLimits(z);
 		if (xLimits.size() < 2) 
 			continue;
 		for (double x = curXLimits[0]; x < curXLimits[1]; x += step2) {
 			double val = noise.GetNoise((float)x, (float)z);
-			if (val > limit) {
+			printOnTerminal("x:" + std::to_string(x) + " y:" + std::to_string(z) + " val:" + std::to_string(val));
+			if (val < limit) {
 				roadsPoints.push_back(Point(x, z));
 			}
 		}
 	}
-	//showDebug("limit:"+std::to_string(limit) + "   punkty:" + std::to_string(roadsPoints.size()));
+	printOnTerminal("limit:"+std::to_string(limit) + "   punkty:" + std::to_string(roadsPoints.size()));
 }
 
 void PointBasedAlgorythmGenerator::randomNoiseGeneratedPoints() {
 	Point zMin = *std::min_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.z < b.z; });
 	Point zMax = *std::max_element(limitPoints.begin(), limitPoints.end(), [](Point a, Point b) {return a.z < b.z; });
 	double step = (zMax.z -zMin.z) / sqrt(pointNumber);
-	showDebug("Info z random noise");
-	showDebug(pointNumber);
-	showDebug(step);
-	showDebug(step/3);
 	for (double z = zMin.z; z < zMax.z; z += step) {
 		auto curXLimits = findXLimits(z);
 		for (double x = curXLimits[0]; x < curXLimits[1]; x += step) {
@@ -124,7 +125,7 @@ void PointBasedAlgorythmGenerator::randomNoiseGeneratedPoints() {
 }
 
 std::vector<Street*> PointBasedAlgorythmGenerator::generate() {
-	showDebug("random points");
+	//printOnTerminal("random points");
 	if (type == "random")
 		randomPoints();
 	else if (type == "fastNoise")
@@ -132,21 +133,27 @@ std::vector<Street*> PointBasedAlgorythmGenerator::generate() {
 	else if (type == "noise")
 		randomNoiseGeneratedPoints();
 	else
-		randomMinDistPoints(15, 30);
+		randomMinDistPoints(9, 30);
+	printOnTerminal("points added: " + std::to_string(roadsPoints.size()));
+	if (roadsPoints.empty() || roadsPoints.size() > 400) // >400 to delete
+		return streets;
 	if (!cityCenterSet)
 		countCityCenter();
 	if (!cityDiagonalSet)
 		countCityDiagonal();
-	showDebug("findingConnections");
+	printOnTerminal("findingConnections");
 	findRoadConnections();
-	showDebug("deleting intersections");
+	printOnTerminal("roads added: " + std::to_string(roadConnections.size()));
+	if (roadConnections.empty())
+		return streets;
+	printOnTerminal("deleting intersections");
 	deleteRoadsIntersections();
-	showDebug("deleting small angle streets");
+	printOnTerminal("deleting small angle streets");
 	deleteSmallAngleRoads();
 	if (!ignoreVisualObjects) {
-		showDebug("adding streets");
+		printOnTerminal("adding streets");
 		addStreets();
-		showDebug("adding crossings");
+		printOnTerminal("adding crossings");
 		addCrossings();
 	}
 	return streets;
@@ -162,12 +169,13 @@ void PointBasedAlgorythmGenerator::deleteRoadsIntersections() {
 				double l1 = Vector3::countSectionLength(*i);
 				double l2 = Vector3::countSectionLength(*j);
 				if (canBeReplacedByBridge(*i, *j)) {
-					showDebug("mamy to");
-					showDebug(roadConnections.size());
-					RoadConnection* toReplace = l1 > l2 ? &*i : &*j;
+					RoadConnection* withBridge = l1 > l2 ? &*i : &*j;
+					RoadConnection* underBrigde = l1 > l2 ? &*j : &*i;
 					Point intersection = intersectionPoint(*i, *j);
-					toReplace->bridges.push_back(intersection);
-					(l1 > l2 ? &*j : &*i)->bridge = true;
+					withBridge->bridges.push_back(intersection);
+					withBridge->isUnderBrigde.push_back(false);
+					underBrigde->bridges.push_back(intersection);
+					underBrigde->isUnderBrigde.push_back(true);
 				} else {
 					// usuwamy krotsza droge
 					if (canBeDeleted(j - roadConnections.begin()) && l1 > l2 || !canBeDeleted(i - roadConnections.begin())) {

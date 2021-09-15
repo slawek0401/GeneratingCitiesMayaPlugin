@@ -145,31 +145,47 @@ std::vector<Street*> GeneratorAbstract::createStreet(RoadConnection rc, std::vec
 	Point q = rc.second;
 	double streetWidth = rc.width;
 
-	Point middlePoint(q.x - p.x, q.z - p.z);
+	Point middlePoint((q.x + p.x)/2, (q.z + p.z)/2);
 	std::vector<Street*> res;
 	Street* street;
-	if (rc.hasBridges()) {
+	if (rc.hasBridges() || rc.hasUnderBridges()) {
 		Vector3 vec(rc.first, rc.bridges[0]);
 		vec.setLength(vec.countLength() - 1.5 * streetWidth - 1);
 		auto points = vec.toPoints(rc.first);
 		street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, streetWidth, streetWidth, vec.countLength());
 		res.push_back(street);
-		setStreetVisualProperies(street, buildingsAlong, true, points.first, points.second, vec.countLength(), streetTex, walkPathTex);
+		
+		std::vector<double> newBuildingAlong;
+		addAll<>(newBuildingAlong, buildingsAlong);
+		newBuildingAlong[0] = 1.0;
+		newBuildingAlong[2] = 1.0;
+
+		setStreetVisualProperies(street, newBuildingAlong, true, points.first, points.second, vec.countLength(), streetTex, walkPathTex);
 		vec.setLength(vec.countLength() + streetWidth);
 		points = vec.toPoints(rc.first);
+		newBuildingAlong[1] = 1.0;
+		newBuildingAlong[3] = 1.0;
 		for (unsigned i = 0; i < rc.bridges.size(); ++i) {
 			auto intersection = rc.bridges[i];
 			vec.setLength(streetWidth + 2);
 			points = vec.toPoints(points.second);
-			street = new Bridge(0.15, -streetWidth / 2, 0, streetWidth, streetWidth + 2);
+			if (rc.isUnderBrigde[i])
+				street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, 0, streetWidth, streetWidth + 2);
+			else
+				street = new Bridge(0.15, -streetWidth / 2, 0, streetWidth, streetWidth + 2);
 			res.push_back(street);
 			setStreetVisualProperies(street, buildingsAlong, false, points.first, points.second, streetWidth + 2, streetTex, walkPathTex);
 			
+			if (i == rc.bridges.size() - 1) {
+				newBuildingAlong[0] = buildingsAlong[0];
+				newBuildingAlong[2] = buildingsAlong[2];
+			}
 			auto nextPoint = i == rc.bridges.size() - 1 ? q : rc.bridges[i + 1];
-			street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, 0, streetWidth, Vector3::countSectionLength(intersection, nextPoint) - streetWidth - 2);
+			auto streetLength = Vector3::countSectionLength(intersection, nextPoint) - streetWidth - 2;
+			street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, 0, streetWidth, streetLength);
 			vec.setLength(Vector3::countSectionLength(intersection, nextPoint) - streetWidth - 2);
 			points = vec.toPoints(points.second);
-			setStreetVisualProperies(street, buildingsAlong, true, points.first, points.second, streetWidth + 2, streetTex, walkPathTex);
+			setStreetVisualProperies(street, newBuildingAlong, true, points.first, points.second, streetLength, streetTex, walkPathTex);
 			res.push_back(street);
 			
 			//Vector3 vec(toReplace->first, toReplace->second);
@@ -192,7 +208,7 @@ std::vector<Street*> GeneratorAbstract::createStreet(RoadConnection rc, std::vec
 		double streetLength = countDistance(p, q);
 		street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -streetWidth / 2, streetWidth, streetWidth, streetLength - 2 * streetWidth);//w przeciwienstwie do tego ni¿ej tutaj ulica nie zaczyna siê idealnie w punkcie, jest miejsce na skrzyzowanie
 		res.push_back(street);
-		setStreetVisualProperies(street, buildingsAlong, !rc.bridge, p, q, streetLength - 2 * streetWidth, streetTex, walkPathTex);
+		setStreetVisualProperies(street, buildingsAlong, true, p, q, streetLength - 2 * streetWidth, streetTex, walkPathTex);
 	}
 	//Street* street = new Street(this->getBuildingTypeByDistanceFromCentre(middlePoint), 0.15, -0.5, 0, 1, countDistance(p, q));
 	//Street(BuildingType neighbourhood, double walkPathFrac = 0.15, int x1 = 0, int z1 = 0, int width = 2, int length = 2);

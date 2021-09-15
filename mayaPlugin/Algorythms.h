@@ -70,3 +70,6 @@ void addAllFromIndex(std::vector<T>& vec, std::vector<T>& vecToAdd, unsigned j) 
 //debug
 void showDebug(std::string a);
 void showDebug(double a);
+
+void printOnTerminal(std::string a);
+void printOnTerminal(double a);

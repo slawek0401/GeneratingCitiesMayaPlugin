@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Algorythms.h" />
+    <ClInclude Include="Args.h" />
     <ClInclude Include="BinaryDivisionAlgorythmGenerator.h" />
     <ClInclude Include="Boundaries.h" />
     <ClInclude Include="Bridge.h" />
@@ -195,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Algorythms.cpp" />
+    <ClCompile Include="Args.cpp" />
     <ClCompile Include="BinaryDivisionAlgorythmGenerator.cpp" />
     <ClCompile Include="Boundaries.cpp" />
     <ClCompile Include="Bridge.cpp" />

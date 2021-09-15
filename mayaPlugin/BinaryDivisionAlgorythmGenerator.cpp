@@ -11,6 +11,11 @@ BinaryDivisionAlgorythmGenerator::BinaryDivisionAlgorythmGenerator(TextureFactor
 	this->xMax = xMax;
 	this->zMin = zMin;
 	this->zMax = zMax;
+
+	limitPoints.push_back(Point(xMin, zMin));
+	limitPoints.push_back(Point(xMin, zMax));
+	limitPoints.push_back(Point(xMax, zMin));
+	limitPoints.push_back(Point(xMax, zMax));
 }
 Boundaries fun(Boundaries& bound) {
 	return bound;
@@ -55,7 +60,7 @@ Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Bo
 		if (division < minValX || division > maxValX)
 			division = mi;
 	
-		roadConnections.push_back(RoadConnection(Point(division, minValZ), Point(division, maxValZ)));
+		roadConnections.push_back(RoadConnection(Point(division, minValZ), Point(division, maxValZ), this->streetWidth));
 		unsigned foundTopId = findTopId(bound, division);
 		unsigned foundDownId = findDownId(bound, division);
 		unsigned newId1 = roadConnections.size() - 1;
@@ -85,7 +90,7 @@ Boundaries BinaryDivisionAlgorythmGenerator::generateRecursive(unsigned iter, Bo
 		if (division < minValZ || division > maxValZ)
 			division = mi;
 
-		roadConnections.push_back(RoadConnection(Point(minValX, division), Point(maxValX, division)));
+		roadConnections.push_back(RoadConnection(Point(minValX, division), Point(maxValX, division), this->streetWidth));
 		unsigned foundLeftId = findLeftId(bound, division);
 		unsigned foundRightId = findRightId(bound, division);
 		unsigned newId1 = roadConnections.size() - 1;

@@ -365,6 +365,15 @@ void showDebug(double a) {
 	MGlobal::displayInfo(c);
 }
 
+void printOnTerminal(std::string a) {
+	MString c(a.data());
+	MGlobal::displayInfo(c);
+}
+
+void printOnTerminal(double a) {
+	MString c(std::to_string(a).data());
+	MGlobal::displayInfo(c);
+}
 double countDistance(Point p, Point q) {
 	return sqrt(pow2(p.x - q.x) + pow2(p.y - q.y) + pow2(p.z - q.z));
 }

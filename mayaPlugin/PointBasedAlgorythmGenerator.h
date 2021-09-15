@@ -44,7 +44,7 @@ protected:
 	void randomMinDistPoints(double minDist, unsigned maxMistakes);
 	void randomFastNoicePoints();
 	void randomNoiseGeneratedPoints();
-	void findRoadConnections(double minLength=10, double maxLength=25);
+	void findRoadConnections(double minLength=5, double maxLength=25);
 	std::vector<double> findXLimits(double z);
 	void deleteRoadsIntersections();
 	void deleteSmallAngleRoads();

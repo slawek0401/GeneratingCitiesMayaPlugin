@@ -6,6 +6,7 @@ FractalGenerator::FractalGenerator(TextureFactory texFactory, double xMin, doubl
 	this->limitPoints.push_back(Point(xMin, zMax));
 	this->limitPoints.push_back(Point(xMax, zMax));
 	this->limitPoints.push_back(Point(xMax, zMin));
+	this->countCityDiagonal();
 }
 
 std::vector<Street*> FractalGenerator::generate() {
@@ -28,6 +29,7 @@ void showLimits(std::vector<std::vector<Point>> limits) {
 FractalGenerator& FractalGenerator::addGenerator(PointBasedAlgorythmGenerator& generator) {
 	showDebug("addGenerator");
 	generator.setIgnoreVisualObjects(true);
+	generator.setCityDiagonal(this->getCityDiagonal());
 	if (isFirstAlg) {
 		isFirstAlg = false;
 		generator.limitPoints = this->limitPoints;
@@ -61,6 +63,7 @@ FractalGenerator& FractalGenerator::addGenerator(PointBasedAlgorythmGenerator& g
 FractalGenerator& FractalGenerator::addGenerator(BinaryDivisionAlgorythmGenerator& generator) {
 	showDebug("addGenerator");
 	generator.setIgnoreVisualObjects(true);
+	generator.setCityDiagonal(this->getCityDiagonal());
 	if (isFirstAlg) {
 		isFirstAlg = false;
 		generator.limitPoints = this->limitPoints;
